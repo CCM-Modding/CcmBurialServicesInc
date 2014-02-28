@@ -1,0 +1,16 @@
+[
+{
+  "modid": "BurialServices",
+  "name": "CcmBurialServicesInc",
+  "description": "Adds an advanced grave system",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://github.com/CCM-Modding/CcmBurialServicesInc",
+  "updateUrl": "",
+  "authors": ["Dries007"],
+  "credits": "Claycorp for comping up with this spielerei.",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": ["after:NucleumOmnium"]
+}
+]

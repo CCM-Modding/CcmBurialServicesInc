@@ -1,0 +1,4 @@
+[submodule "NO"]
+	path = NO
+	url = git://github.com/CCM-Modding/Nucleum-Omnium.git
+	branch = theRealWork
