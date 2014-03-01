@@ -1,7 +1,10 @@
 package ccm.burialservices;
 
-import ccm.burialservices.block.IronShovel;
-import ccm.nucleumOmnium.NOConfig;
+import ccm.burialservices.block.SpadeBlock;
+import ccm.burialservices.client.renderers.SpadeRenderer;
+import ccm.burialservices.te.SpadeTE;
+import ccm.burialservices.worldgen.village.GraveyardHandler;
+import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.ModMetadata;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -9,14 +12,12 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
-import net.minecraft.client.resources.Language;
-import scala.tools.nsc.typechecker.Infer;
-import sun.org.mozilla.javascript.internal.Token;
+import cpw.mods.fml.common.registry.VillagerRegistry;
 
 import java.util.logging.Logger;
 
-import static ccm.burialservices.util.BSConstants.*;
-import static ccm.nucleumOmnium.util.NOConstants.NO_MODID;
+import static ccm.burialservices.util.BSConstants.MODID;
+import static ccm.burialservices.util.BSConstants.MODNAME;
 
 @Mod(modid = MODID, name = MODNAME, dependencies = "required-after:NucleumOmnium")
 public class BurialServices
@@ -28,7 +29,7 @@ public class BurialServices
     private static ModMetadata metadata;
 
     private BSConfig config;
-    private Logger logger;
+    private Logger   logger;
 
     public static Logger getLogger()
     {
@@ -50,9 +51,16 @@ public class BurialServices
     {
         logger = event.getModLog();
         config = new BSConfig(event.getSuggestedConfigurationFile());
-        new IronShovel(config.ironShovelID);
-        GameRegistry.registerBlock(IronShovel.getInstance(), "IronShovel");
-        LanguageRegistry.addName(IronShovel.getInstance(), "Iron Shovel");
+        new SpadeBlock(config.ironShovelID);
+        GameRegistry.registerTileEntity(SpadeTE.class, "SpadeTE");
+        GameRegistry.registerBlock(SpadeBlock.getInstance(), "SpadeBlock");
+        LanguageRegistry.addName(SpadeBlock.getInstance(), "Spade");
+        if (event.getSide().isClient())
+        {
+            ClientRegistry.bindTileEntitySpecialRenderer(SpadeTE.class, new SpadeRenderer());
+        }
+
+        VillagerRegistry.instance().registerVillageCreationHandler(new GraveyardHandler());
     }
 
     @Mod.EventHandler
