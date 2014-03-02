@@ -1,8 +1,9 @@
 package ccm.burialservices;
 
-import ccm.burialservices.block.SpadeBlock;
-import ccm.burialservices.client.renderers.SpadeRenderer;
-import ccm.burialservices.te.SpadeTE;
+import ccm.burialservices.block.ToolBlock;
+import ccm.burialservices.client.renderers.ToolRenderer;
+import ccm.burialservices.te.ToolTE;
+import ccm.burialservices.util.EventHandler;
 import ccm.burialservices.worldgen.village.GraveyardHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.Mod;
@@ -51,16 +52,18 @@ public class BurialServices
     {
         logger = event.getModLog();
         config = new BSConfig(event.getSuggestedConfigurationFile());
-        new SpadeBlock(config.ironShovelID);
-        GameRegistry.registerTileEntity(SpadeTE.class, "SpadeTE");
-        GameRegistry.registerBlock(SpadeBlock.getInstance(), "SpadeBlock");
-        LanguageRegistry.addName(SpadeBlock.getInstance(), "Spade");
+        new ToolBlock(config.ironShovelID);
+        GameRegistry.registerTileEntity(ToolTE.class, "ToolTE");
+        GameRegistry.registerBlock(ToolBlock.getInstance(), "ToolBlock");
+        LanguageRegistry.addName(ToolBlock.getInstance(), "ToolBlock");
         if (event.getSide().isClient())
         {
-            ClientRegistry.bindTileEntitySpecialRenderer(SpadeTE.class, new SpadeRenderer());
+            ClientRegistry.bindTileEntitySpecialRenderer(ToolTE.class, new ToolRenderer());
         }
 
         VillagerRegistry.instance().registerVillageCreationHandler(new GraveyardHandler());
+
+        EventHandler.INSTANCE.init();
     }
 
     @Mod.EventHandler

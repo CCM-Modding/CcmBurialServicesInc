@@ -1,7 +1,8 @@
 package ccm.burialservices.worldgen.village;
 
-import ccm.burialservices.block.SpadeBlock;
+import ccm.burialservices.block.ToolBlock;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.ComponentVillage;
 import net.minecraft.world.gen.structure.ComponentVillageStartPiece;
@@ -56,8 +57,8 @@ public class GraveyardComponent extends ComponentVillage
 
         // Cobble floor
         this.fillWithBlocks(world, sbb, 7, 0, 0, 10, 0, 3, Block.cobblestone.blockID, Block.cobblestone.blockID, true);
-        for (int x = 7 ; x < 10; x ++)
-            for (int z = 0 ; z < 4; z++)
+        for (int x = 7; x < 10; x++)
+            for (int z = 0; z < 4; z++)
                 this.fillCurrentPositionBlocksDownwards(world, Block.cobblestone.blockID, Block.cobblestone.blockID, x, 0, z, sbb);
 
         // Walls
@@ -86,7 +87,7 @@ public class GraveyardComponent extends ComponentVillage
         int i = this.getXWithOffset(6, 2);
         int j = this.getYWithOffset(1);
         int k = this.getZWithOffset(6, 2);
-        SpadeBlock.place(world, i, j, k);
+        ToolBlock.place(world, i, j, k, Item.shovelIron);
 
         return true;
     }

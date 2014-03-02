@@ -1,0 +1,145 @@
+package ccm.burialservices.client.renderers;
+
+import ccm.burialservices.te.ToolTE;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.item.ItemAxe;
+import net.minecraft.item.ItemPickaxe;
+import net.minecraft.item.ItemSpade;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.ForgeDirection;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
+public class ToolRenderer extends TileEntitySpecialRenderer
+{
+    private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
+
+    @Override
+    public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float TickTime)
+    {
+        ToolTE te = (ToolTE) tileentity;
+        if (te.getStack() == null) return;
+
+        Icon icon = te.getStack().getIconIndex();
+        int meta = te.getBlockMetadata();
+
+        if (icon == null) return;
+
+        GL11.glPushMatrix();
+        TextureManager texturemanager = Minecraft.getMinecraft().getTextureManager();
+        texturemanager.bindTexture(texturemanager.getResourceLocation(te.getStack().getItemSpriteNumber()));
+        Tessellator tessellator = Tessellator.instance;
+
+        GL11.glTranslated(x, y, z); //Center to block
+        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+
+        GL11.glTranslatef(-0.5f, .5f, 0.5f); // Center on block
+
+        if (te.getStack().getItem() instanceof ItemSpade)
+        {
+            float shift = 0.3f;
+            switch (ForgeDirection.values()[meta])
+            {
+                case NORTH:
+                    GL11.glTranslatef(0, 0, -shift);
+                    GL11.glRotatef(15f, -0.5f, 0, 0);
+                    break;
+                case SOUTH:
+                    GL11.glTranslatef(0, 0, shift);
+                    GL11.glRotatef(-15f, -0.5f, 0, 0);
+                    break;
+                case EAST:
+                    GL11.glRotatef(90f, 0, 1, 0);
+                    GL11.glTranslatef(-1, 0, 1);
+                    GL11.glTranslatef(0, 0, shift);
+                    GL11.glRotatef(-15f, -0.5f, 0, 0);
+                    break;
+                case WEST:
+                    GL11.glRotatef(90f, 0, 1, 0);
+                    GL11.glTranslatef(-1, 0, 1);
+                    GL11.glTranslatef(0, 0, -shift);
+                    GL11.glRotatef(15f, -0.5f, 0, 0);
+                    break;
+                case DOWN:
+                    GL11.glRotatef(90f, 0, 1, 0);
+                    GL11.glTranslatef(-1, 0, 1);
+                    break;
+            }
+            GL11.glTranslatef(0, 0, -0.03f); //Icon depth of the shovel
+            GL11.glRotatef(180f, 1, 0, 0);
+        }
+        else if (te.getStack().getItem() instanceof ItemAxe || te.getStack().getItem() instanceof ItemPickaxe)
+        {
+            float shift = 0.15f;
+            switch (ForgeDirection.values()[meta])
+            {
+                case NORTH:
+                    GL11.glRotatef(90f, 0, 1, 0);
+                    GL11.glTranslatef(-1, 0, 1);
+                    GL11.glTranslatef(shift, 0, 0);
+                    GL11.glRotatef(-10f, 0, 0, 1);
+                    break;
+                case SOUTH:
+                    GL11.glRotatef(-90f, 0, 1, 0);
+                    GL11.glTranslatef(-1, 0, -1);
+                    GL11.glTranslatef(shift, 0, 0);
+                    GL11.glRotatef(-10f, 0, 0, 1);
+                    break;
+                case EAST:
+                    GL11.glTranslatef(shift, 0, 0);
+                    GL11.glRotatef(-10f, 0, 0, 1);
+                    break;
+                case WEST:
+                    GL11.glRotatef(180f, 0, 1, 0);
+                    GL11.glTranslatef(-2, 0, 0);
+                    GL11.glTranslatef(shift, 0, 0);
+                    GL11.glRotatef(-10f, 0, 0, 1);
+                    break;
+            }
+            GL11.glTranslatef(0, 0, 0.03F);
+        }
+        GL11.glRotatef(-45f, 0, 0, 1);
+        GL11.glScalef(1.5f, 1.5f, 1.5f);
+        ItemRenderer.renderItemIn2D(tessellator, icon.getMaxU(), icon.getMinV(), icon.getMinU(), icon.getMaxV(), icon.getIconWidth(), icon.getIconHeight(), 0.06F / 1.5f);
+
+        if (te.getStack().hasEffect(1))
+        {
+            GL11.glDepthFunc(GL11.GL_EQUAL);
+            GL11.glDisable(GL11.GL_LIGHTING);
+            texturemanager.bindTexture(RES_ITEM_GLINT);
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glBlendFunc(GL11.GL_SRC_COLOR, GL11.GL_ONE);
+            float f7 = 0.76F;
+            GL11.glColor4f(0.5F * f7, 0.25F * f7, 0.8F * f7, 1.0F);
+            GL11.glMatrixMode(GL11.GL_TEXTURE);
+            GL11.glPushMatrix();
+            float f8 = 0.125F;
+            GL11.glScalef(f8, f8, f8);
+            float f9 = (float) (Minecraft.getSystemTime() % 3000L) / 3000.0F * 8.0F;
+            GL11.glTranslatef(f9, 0.0F, 0.0F);
+            GL11.glRotatef(-50.0F, 0.0F, 0.0F, 1.0F);
+            ItemRenderer.renderItemIn2D(tessellator, 0.0F, 0.0F, 1.0F, 1.0F, 256, 256, 0.06F / 1.5f);
+            GL11.glPopMatrix();
+            GL11.glPushMatrix();
+            GL11.glScalef(f8, f8, f8);
+            f9 = (float) (Minecraft.getSystemTime() % 4873L) / 4873.0F * 8.0F;
+            GL11.glTranslatef(-f9, 0.0F, 0.0F);
+            GL11.glRotatef(10.0F, 0.0F, 0.0F, 1.0F);
+            ItemRenderer.renderItemIn2D(tessellator, 0.0F, 0.0F, 1.0F, 1.0F, 256, 256, 0.06F / 1.5f);
+            GL11.glPopMatrix();
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glDisable(GL11.GL_BLEND);
+            GL11.glEnable(GL11.GL_LIGHTING);
+            GL11.glDepthFunc(GL11.GL_LEQUAL);
+        }
+
+        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+        GL11.glPopMatrix();
+    }
+}
