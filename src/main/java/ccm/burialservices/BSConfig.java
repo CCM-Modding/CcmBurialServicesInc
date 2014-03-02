@@ -32,10 +32,7 @@ import java.util.regex.Pattern;
 public class BSConfig
 {
     public int toolBlockID = 270;
-    private String[] RIPTextLine1 = { "RIP" , "Here lies"};
-    private String[] RIPTextLine2 = { "Dries007", "ClayCorp", "Morton", "CaptainShadows", "Squidward", "Testificate", "John Doe", "Jane Doe", "Firefly", "Scrubs", "Neo", "Ned Stark", "Villager #1", "Villager #2", "Villager #3", "Villager #4", "Villager #5", "Villager #6", "Villager #7", "Villager #8", "Villager #9"};
-    private String[] RIPTextLine3 = { " ", " ", "Respawn in 3 2 1", "'Stupid lag'", "'I died.'", "'Its a trap!'", "'Squids!'", "u done goofed", "Your face goddammit!", "yippie kay yay mofo"};
-    private String[] RIPTextLine4 = { "&k1996&r-&k2014&r" };
+    public int graveBlockID = 271;
     public final String[][] RIPText;
 
     public BSConfig(File suggestedConfigurationFile)
@@ -43,6 +40,12 @@ public class BSConfig
         final Configuration config = new Configuration(suggestedConfigurationFile);
 
         toolBlockID = config.getBlock("toolBlockID", toolBlockID).getInt();
+        graveBlockID = config.getBlock("graveBlockID", graveBlockID).getInt();
+
+        String[] RIPTextLine1 = {"RIP", "Here lies"};
+        String[] RIPTextLine2 = {"Dries007", "ClayCorp", "Morton", "CaptainShadows", "Squidward", "Testificate", "John Doe", "Jane Doe", "Firefly", "Scrubs", "Neo", "Ned Stark", "Villager #1", "Villager #2", "Villager #3", "Villager #4", "Villager #5", "Villager #6", "Villager #7", "Villager #8", "Villager #9"};
+        String[] RIPTextLine3 = {" ", " ", "Respawn in 3 2 1", "'Stupid lag'", "'I died.'", "'Its a trap!'", "'Squids!'", "u done goofed", "Your face goddammit!", "yippie kay yay mofo"};
+        String[] RIPTextLine4 = {"&k1996&r-&k2014&r"};
 
         for (int i = 0; i < RIPTextLine1.length; i++) RIPTextLine1[i] = addQuotes(RIPTextLine1[i]);
         for (int i = 0; i < RIPTextLine2.length; i++) RIPTextLine2[i] = addQuotes(RIPTextLine2[i]);

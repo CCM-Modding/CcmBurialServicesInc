@@ -23,8 +23,11 @@
 
 package ccm.burialservices;
 
+import ccm.burialservices.block.GraveBlock;
 import ccm.burialservices.block.ToolBlock;
+import ccm.burialservices.client.renderers.GraveRenderer;
 import ccm.burialservices.client.renderers.ToolRenderer;
+import ccm.burialservices.te.GraveTE;
 import ccm.burialservices.te.ToolTE;
 import ccm.burialservices.util.EventHandler;
 import ccm.burialservices.worldgen.village.GraveyardHandler;
@@ -79,9 +82,16 @@ public class BurialServices
         GameRegistry.registerTileEntity(ToolTE.class, "ToolTE");
         GameRegistry.registerBlock(ToolBlock.getInstance(), "ToolBlock");
         LanguageRegistry.addName(ToolBlock.getInstance(), "ToolBlock");
+
+        new GraveBlock(config.graveBlockID);
+        GameRegistry.registerTileEntity(GraveTE.class, "GraveTE");
+        GameRegistry.registerBlock(GraveBlock.getInstance(), "GraveBlock");
+        LanguageRegistry.addName(GraveBlock.getInstance(), "Grave");
+
         if (event.getSide().isClient())
         {
             ClientRegistry.bindTileEntitySpecialRenderer(ToolTE.class, new ToolRenderer());
+            ClientRegistry.bindTileEntitySpecialRenderer(GraveTE.class, new GraveRenderer());
         }
 
         VillagerRegistry.instance().registerVillageCreationHandler(new GraveyardHandler());

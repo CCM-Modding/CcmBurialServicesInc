@@ -24,8 +24,11 @@
 package ccm.burialservices.util;
 
 import ccm.burialservices.block.ToolBlock;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.item.*;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.EventPriority;
@@ -36,6 +39,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 public class EventHandler
 {
     public static final EventHandler INSTANCE = new EventHandler();
+    public boolean forceRender = false;
 
     private EventHandler() {}
 
@@ -50,6 +54,9 @@ public class EventHandler
     @ForgeSubscribe(priority = EventPriority.HIGHEST)
     public void deathEvent(PlayerDropsEvent event)
     {
+        World world = event.entityPlayer.getEntityWorld();
+        if (world.isRemote) return;
+
 
     }
 
