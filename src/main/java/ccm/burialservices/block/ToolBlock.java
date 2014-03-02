@@ -59,7 +59,7 @@ public class ToolBlock extends BlockContainer
     public boolean checkMaterial(Material material, Item tool)
     {
         if (tool instanceof ItemSpade) return material == Material.grass || material == Material.ground || material == Material.craftedSnow || material == Material.clay || material == Material.snow || material == Material.sand;
-        else if (tool instanceof ItemAxe) return material == Material.grass || material == Material.ground || material == Material.craftedSnow || material == Material.clay || material == Material.snow || material == Material.sand || material == Material.wood;
+        else if (tool instanceof ItemAxe || tool instanceof ItemSword) return material == Material.grass || material == Material.ground || material == Material.craftedSnow || material == Material.clay || material == Material.snow || material == Material.sand || material == Material.wood;
         else if (tool instanceof ItemPickaxe) return true;
         else return false;
     }
@@ -140,7 +140,6 @@ public class ToolBlock extends BlockContainer
 
     public void setBlockBoundsBasedOnState(IBlockAccess blockAccess, int x, int y, int z)
     {
-
         ToolTE te = (ToolTE) blockAccess.getBlockTileEntity(x, y, z);
         if (te.getStack() == null) return;
         if (te.getStack().getItem() instanceof ItemSpade)
@@ -215,11 +214,42 @@ public class ToolBlock extends BlockContainer
                     break;
             }
         }
+        else if (te.getStack().getItem() instanceof ItemSword)
+        {
+            float d1 = 0.03F;
+            float d2 = 0.9f;
+            switch (ForgeDirection.values()[blockAccess.getBlockMetadata(x, y, z)])
+            {
+                case NORTH:
+                    this.setBlockBounds(0.5f - d1, 0, 0, 0.5f + d1, 1, 0.5f + d2);
+                    break;
+                case SOUTH:
+                    this.setBlockBounds(0.5f - d1, 0, 0.5f - d2, 0.5f + d1, 1, 1);
+                    break;
+                case EAST:
+                    this.setBlockBounds(0.5f - d2, 0, 0.5f - d1, 1, 1, 0.5f + d1);
+                    break;
+                case WEST:
+                    this.setBlockBounds(0, 0, 0.5f - d1, 0.5f + d2, 1, 0.5f + d1);
+                    break;
+                case UP:
+                    this.setBlockBounds(0.5f - d1, 0, 0, 0.5f + d1, 1.55f, 1);
+                    break;
+                case DOWN:
+                    this.setBlockBounds(0, 0, 0.5f - d1, 1, 1.55f, 0.5f + d1);
+                    break;
+            }
+        }
     }
 
-    public static void place(World world, int x, int y, int z, Item tool)
+    public static void placeShovel(World world, int x, int y, int z, Item tool)
     {
-        world.setBlock(x, y, z, ToolBlock.getInstance().blockID, ToolBlock.getInstance().onBlockPlaced(world, x, y, z, 0, 0f, 0f, 0f, 0), 3);
+        placeOther(world, x, y, z, tool, getInstance().getMetaForShovel(world, x, y, z));
+    }
+
+    public static void placeOther(World world, int x, int y, int z, Item tool, int meta)
+    {
+        world.setBlock(x, y, z, ToolBlock.getInstance().blockID, meta, 3);
         TileEntity te = world.getBlockTileEntity(x, y, z);
         if (te instanceof ToolTE)
         {

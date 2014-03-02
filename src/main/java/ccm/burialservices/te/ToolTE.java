@@ -23,6 +23,8 @@
 
 package ccm.burialservices.te;
 
+import ccm.burialservices.BurialServices;
+import com.google.common.base.Joiner;
 import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -33,9 +35,13 @@ import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
+
 public class ToolTE extends TileEntity
 {
     private ItemStack stack;
+    private int signFacing = -1;
+    private String[] signText = {"", "", "", ""};
 
     public ToolTE()
     {
@@ -71,12 +77,24 @@ public class ToolTE extends TileEntity
         return stack;
     }
 
+    public int getSignFacing()
+    {
+        return signFacing;
+    }
+
+    public String[] getSignText()
+    {
+        return signText;
+    }
+
     public void readFromNBT(NBTTagCompound tag)
     {
         if (FMLCommonHandler.instance().getEffectiveSide().isClient()) return;
         super.readFromNBT(tag);
 
         stack = ItemStack.loadItemStackFromNBT(tag.getCompoundTag("stack"));
+        signFacing = tag.getInteger("signFacing");
+        signText = tag.getString("signText").split("\n");
     }
 
     public void writeToNBT(NBTTagCompound tag)
@@ -84,17 +102,51 @@ public class ToolTE extends TileEntity
         if (FMLCommonHandler.instance().getEffectiveSide().isClient()) return;
         super.writeToNBT(tag);
         tag.setCompoundTag("stack", getStack().writeToNBT(new NBTTagCompound()));
+        tag.setInteger("signFacing", signFacing);
+        tag.setString("signText", Joiner.on('\n').join(signText));
     }
 
     public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt)
     {
         stack = ItemStack.loadItemStackFromNBT(pkt.data.getCompoundTag("stack"));
+        signFacing = pkt.data.getInteger("signFacing");
+        signText = pkt.data.getString("signText").split("\n");
     }
 
     public Packet getDescriptionPacket()
     {
         NBTTagCompound root = new NBTTagCompound();
         root.setCompoundTag("stack", getStack().writeToNBT(new NBTTagCompound()));
+        root.setInteger("signFacing", signFacing);
+        root.setString("signText", Joiner.on('\n').join(signText));
         return new Packet132TileEntityData(xCoord, yCoord, zCoord, 15, root);
+    }
+
+    public void addSign(int coordBaseMode, ArrayList<Integer>[] lines)
+    {
+        signFacing = coordBaseMode;
+
+        String[][] RIPText = BurialServices.getConfig().RIPText;
+        for (int i = 0; i < 4; i++)
+        {
+            String[] configText = RIPText[i];
+            ArrayList<Integer> line = lines[i];
+            boolean done = false;
+            while (!done)
+            {
+                if (line.size() == configText.length) line.clear();
+
+                int rnd = worldObj.rand.nextInt(configText.length);
+                if (!line.contains(rnd))
+                {
+                    done = true;
+                    signText[i] = configText[rnd];
+                }
+            }
+        }
+//        signText[0] = BurialServices.getConfig().RIPTextLine1[worldObj.rand.nextInt(BurialServices.getConfig().RIPTextLine1.length)];
+//        signText[1] = BurialServices.getConfig().RIPTextLine2[worldObj.rand.nextInt(BurialServices.getConfig().RIPTextLine2.length)];
+//        signText[2] = BurialServices.getConfig().RIPTextLine3[worldObj.rand.nextInt(BurialServices.getConfig().RIPTextLine3.length)];
+//        signText[3] = BurialServices.getConfig().RIPTextLine4[worldObj.rand.nextInt(BurialServices.getConfig().RIPTextLine4.length)];
     }
 }

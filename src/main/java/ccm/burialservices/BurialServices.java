@@ -75,7 +75,7 @@ public class BurialServices
     {
         logger = event.getModLog();
         config = new BSConfig(event.getSuggestedConfigurationFile());
-        new ToolBlock(config.ironShovelID);
+        new ToolBlock(config.toolBlockID);
         GameRegistry.registerTileEntity(ToolTE.class, "ToolTE");
         GameRegistry.registerBlock(ToolBlock.getInstance(), "ToolBlock");
         LanguageRegistry.addName(ToolBlock.getInstance(), "ToolBlock");

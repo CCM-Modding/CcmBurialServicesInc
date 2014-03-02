@@ -25,6 +25,8 @@ package ccm.burialservices.client.renderers;
 
 import ccm.burialservices.te.ToolTE;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -32,6 +34,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemSpade;
+import net.minecraft.item.ItemSword;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
 import net.minecraft.util.ResourceLocation;
@@ -42,6 +45,8 @@ import org.lwjgl.opengl.GL12;
 public class ToolRenderer extends TileEntitySpecialRenderer
 {
     private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
+    private static final ResourceLocation SIGNTEXTURE = new ResourceLocation("textures/entity/sign.png");
+    private final ModelSign modelSign = new ModelSign();
 
     @Override
     public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float TickTime)
@@ -127,6 +132,45 @@ public class ToolRenderer extends TileEntitySpecialRenderer
             }
             GL11.glTranslatef(0, 0, 0.03F);
         }
+        else if (te.getStack().getItem() instanceof ItemSword)
+        {
+            float shift = 0.15f;
+            switch (ForgeDirection.values()[meta])
+            {
+                case NORTH:
+                    GL11.glRotatef(90f, 0, 1, 0);
+                    GL11.glTranslatef(shift, 0, 0);
+                    GL11.glRotatef(-90f, 0, 0, 1);
+                    GL11.glTranslatef(-1, 0, 1);
+                    break;
+                case SOUTH:
+                    GL11.glRotatef(-90f, 0, 1, 0);
+                    GL11.glTranslatef(shift, 0, 0);
+                    GL11.glRotatef(-90f, 0, 0, 1);
+                    GL11.glTranslatef(-1, 0, -1);
+                    break;
+                case EAST:
+                    GL11.glTranslatef(shift, 0, 0);
+                    GL11.glRotatef(-90f, 0, 0, 1);
+                    GL11.glTranslatef(-1, 1, 0);
+                    break;
+                case WEST:
+                    GL11.glRotatef(180f, 0, 1, 0);
+                    GL11.glTranslatef(-1, 1, 0);
+                    GL11.glTranslatef(shift, 0, 0);
+                    GL11.glRotatef(-90f, 0, 0, 1);
+                    break;
+                case UP:
+                    GL11.glRotatef(180f, 1, 0, 0);
+                    GL11.glTranslatef(1, 0, 1);
+                    GL11.glRotatef(90f, 0, 1, 0);
+                    break;
+                case DOWN:
+                    GL11.glRotatef(180f, 1, 0, 0);
+                    break;
+            }
+            GL11.glTranslatef(-0.05f, 0, 0.03F);
+        }
         GL11.glRotatef(-45f, 0, 0, 1);
         GL11.glScalef(1.5f, 1.5f, 1.5f);
         ItemRenderer.renderItemIn2D(tessellator, icon.getMaxU(), icon.getMinV(), icon.getMinU(), icon.getMaxV(), icon.getIconWidth(), icon.getIconHeight(), 0.06F / 1.5f);
@@ -164,5 +208,63 @@ public class ToolRenderer extends TileEntitySpecialRenderer
 
         GL11.glDisable(GL12.GL_RESCALE_NORMAL);
         GL11.glPopMatrix();
+
+        if (te.getStack().getItem() instanceof ItemSword && te.getSignFacing() != -1)
+        {
+            GL11.glPushMatrix();
+            float f1 = 0.6666667F;
+            float f2 = 0.0F;
+            //System.out.println(te.getSignFacing());
+
+            if (te.getSignFacing() == 0)
+            {
+                f2 = -90f;
+            }
+            else if (te.getSignFacing() == 1)
+            {
+                f2 = 90f;
+            }
+            else if (te.getSignFacing() == 2)
+            {
+                f2 = 180f;
+            }
+
+            GL11.glTranslatef((float)x + 0.5F, (float)y + 0.75F * f1, (float)z + 0.5F);
+            GL11.glRotatef(-f2, 0.0F, 1.0F, 0.0F);
+            GL11.glTranslatef(0.0F, -0.3125F, -0.4375F);
+            GL11.glTranslatef(0f, 0.8F, 0.5f);
+            this.modelSign.signStick.showModel = false;
+
+            this.bindTexture(SIGNTEXTURE);
+            GL11.glPushMatrix();
+            GL11.glScalef(f1, -f1, -f1);
+            this.modelSign.renderSign();
+            GL11.glPopMatrix();
+            FontRenderer fontrenderer = this.getFontRenderer();
+            f2 = 0.016666668F * f1;
+            GL11.glTranslatef(0.0F, 0.5F * f1, 0.07F * f1);
+            GL11.glScalef(f2, -f2, f2);
+            GL11.glNormal3f(0.0F, 0.0F, -1.0F * f2);
+            GL11.glDepthMask(false);
+            byte b0 = 0;
+
+            for (int j = 0; j < te.getSignText().length; ++j)
+            {
+                GL11.glPushMatrix();
+                String s = te.getSignText()[j];
+                int width = fontrenderer.getStringWidth(s);
+                if (width > 100)
+                {
+                    float f = 1f - ((width) * 0.002f);
+                    GL11.glScalef(f, f, f);
+                }
+                fontrenderer.drawString(s, -width / 2, j * 10 - te.getSignText().length * 5, b0);
+                GL11.glPopMatrix();
+            }
+
+            GL11.glDepthMask(true);
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glPopMatrix();
+        }
     }
 }

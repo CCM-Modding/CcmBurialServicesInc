@@ -24,10 +24,9 @@
 package ccm.burialservices.util;
 
 import ccm.burialservices.block.ToolBlock;
-import net.minecraft.item.ItemAxe;
-import net.minecraft.item.ItemPickaxe;
-import net.minecraft.item.ItemSpade;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.*;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.MinecraftForge;
@@ -63,8 +62,9 @@ public class EventHandler
     public void clickEvent(PlayerInteractEvent event)
     {
         World world = event.entityPlayer.getEntityWorld();
+        if (world.isRemote) return;
         ItemStack itemStack = event.entityPlayer.getHeldItem();
-        if (!world.isRemote && itemStack != null && event.entityPlayer.isSneaking() && event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && ToolBlock.getInstance().checkMaterial(world.getBlockMaterial(event.x, event.y, event.z), itemStack.getItem()))
+        if (itemStack != null && event.entityPlayer.isSneaking() && event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && ToolBlock.getInstance().checkMaterial(world.getBlockMaterial(event.x, event.y, event.z), itemStack.getItem()))
         {
             int x = event.x, y = event.y, z = event.z;
             if (event.face == 1 && itemStack.getItem() instanceof ItemSpade)
@@ -88,6 +88,26 @@ public class EventHandler
                 {
                     event.setCanceled(true);
                     world.setBlock(x, y, z, ToolBlock.getInstance().blockID, direction.getOpposite().ordinal(), 3);
+                    ToolBlock.getInstance().onBlockPlacedBy(world, x, y, z, event.entityPlayer, itemStack);
+                }
+            }
+            if (itemStack.getItem() instanceof ItemSword)
+            {
+                ForgeDirection direction = ForgeDirection.VALID_DIRECTIONS[event.face];
+                x += direction.offsetX;
+                y += direction.offsetY;
+                z += direction.offsetZ;
+
+                if (world.isAirBlock(x, y, z) && world.isBlockSolidOnSide(event.x, event.y, event.z, direction.getOpposite()))
+                {
+                    int meta = direction.getOpposite().ordinal();
+                    if (meta == 0)
+                    {
+                        System.out.println(direction.getOpposite());
+                        meta = world.rand.nextInt(2);
+                    }
+                    event.setCanceled(true);
+                    world.setBlock(x, y, z, ToolBlock.getInstance().blockID, meta, 3);
                     ToolBlock.getInstance().onBlockPlacedBy(world, x, y, z, event.entityPlayer, itemStack);
                 }
             }

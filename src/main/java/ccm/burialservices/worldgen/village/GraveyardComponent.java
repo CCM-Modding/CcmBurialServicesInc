@@ -24,6 +24,7 @@
 package ccm.burialservices.worldgen.village;
 
 import ccm.burialservices.block.ToolBlock;
+import ccm.burialservices.te.ToolTE;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
@@ -32,6 +33,7 @@ import net.minecraft.world.gen.structure.ComponentVillageStartPiece;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureComponent;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -107,12 +109,59 @@ public class GraveyardComponent extends ComponentVillage
         this.placeDoorAtCurrentPosition(world, sbb, random, 7, 1, 1, this.getMetadataWithOffset(Block.doorWood.blockID, 0));
 
         // Spade
-        int i = this.getXWithOffset(6, 2);
-        int j = this.getYWithOffset(1);
-        int k = this.getZWithOffset(6, 2);
-        ToolBlock.place(world, i, j, k, Item.shovelIron);
+        {
+            int i = this.getXWithOffset(6, 2);
+            int j = this.getYWithOffset(1);
+            int k = this.getZWithOffset(6, 2);
+            ToolBlock.placeShovel(world, i, j, k, Item.shovelIron);
+        }
 
+        // Graves
+        {
+            //noinspection unchecked
+            ArrayList<Integer>[] lines = new ArrayList[] {new ArrayList<Integer>(), new ArrayList<Integer>(), new ArrayList<Integer>(), new ArrayList<Integer>()};
+
+            int x = 1;
+            int j = this.getYWithOffset(1);
+            for (int z = 1; z < 10; z += 2)
+            {
+                int i = this.getXWithOffset(x, z);
+                int k = this.getZWithOffset(x, z);
+                ToolBlock.placeOther(world, i, j, k, Item.swordWood, getMetaBaseOnRotation());
+                ((ToolTE)world.getBlockTileEntity(i, j, k)).addSign(getFacingBaseOnRotation(false), lines);
+            }
+
+            x = 9;
+            for (int z = 5; z < 10; z += 2)
+            {
+                int i = this.getXWithOffset(x, z);
+                int k = this.getZWithOffset(x, z);
+                ToolBlock.placeOther(world, i, j, k, Item.swordWood, getMetaBaseOnRotation());
+                ((ToolTE)world.getBlockTileEntity(i, j, k)).addSign(getFacingBaseOnRotation(true), lines);
+            }
+        }
         return true;
+    }
+
+    public int getFacingBaseOnRotation(boolean b)
+    {
+        switch (coordBaseMode)
+        {
+            case 0:
+                return b ? 0 : 1;
+            case 1:
+                return b ? 2 : 4;
+            case 2:
+                return b ? 1 : 0;
+            case 3:
+                return b ? 4 : 2;
+        }
+        return -1;
+    }
+
+    public int getMetaBaseOnRotation()
+    {
+        return coordBaseMode == 0 || coordBaseMode == 2 ? 1 : 0;
     }
 
     public static GraveyardComponent buildComponent(ComponentVillageStartPiece villagePiece, List pieces, Random random, int p1, int p2, int p3, int p4, int p5)
