@@ -32,7 +32,7 @@ import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.INetworkManager;
@@ -125,9 +125,14 @@ public class GraveTE extends TileEntity
         username = entityLiving.getEntityName();
     }
 
+    public boolean willHold(Item item)
+    {
+        return item instanceof ItemTool || item instanceof ItemHoe || item instanceof ItemSword;
+    }
+
     public boolean onActivated(EntityPlayer player, int side)
     {
-        contents = new ItemStack[] {player.getHeldItem()};
+        if (player.getHeldItem() != null && willHold(player.getHeldItem().getItem())) contents = new ItemStack[] {player.getHeldItem()};
         return true;
     }
 }
