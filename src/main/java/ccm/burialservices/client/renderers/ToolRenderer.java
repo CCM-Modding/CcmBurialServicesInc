@@ -31,10 +31,7 @@ import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.item.ItemAxe;
-import net.minecraft.item.ItemPickaxe;
-import net.minecraft.item.ItemSpade;
-import net.minecraft.item.ItemSword;
+import net.minecraft.item.*;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
 import net.minecraft.util.ResourceLocation;
@@ -69,7 +66,7 @@ public class ToolRenderer extends TileEntitySpecialRenderer
 
         GL11.glTranslatef(-0.5f, .5f, 0.5f); // Center on block
 
-        if (te.getStack().getItem() instanceof ItemSpade)
+        if (te.getStack().getItem() instanceof ItemSpade || te.getStack().getItem() instanceof ItemHoe)
         {
             float shift = 0.3f;
             switch (ForgeDirection.values()[meta])
@@ -253,9 +250,9 @@ public class ToolRenderer extends TileEntitySpecialRenderer
                 GL11.glPushMatrix();
                 String s = te.getSignText()[j];
                 int width = fontrenderer.getStringWidth(s);
-                if (width > 100)
+                if (width > 95)
                 {
-                    float f = 1f - ((width) * 0.002f);
+                    float f = 1f - ((width) * 0.0015f);
                     GL11.glScalef(f, f, f);
                 }
                 fontrenderer.drawString(s, -width / 2, j * 10 - te.getSignText().length * 5, b0);

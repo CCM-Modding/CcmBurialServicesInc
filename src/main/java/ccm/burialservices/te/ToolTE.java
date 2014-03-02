@@ -144,9 +144,5 @@ public class ToolTE extends TileEntity
                 }
             }
         }
-//        signText[0] = BurialServices.getConfig().RIPTextLine1[worldObj.rand.nextInt(BurialServices.getConfig().RIPTextLine1.length)];
-//        signText[1] = BurialServices.getConfig().RIPTextLine2[worldObj.rand.nextInt(BurialServices.getConfig().RIPTextLine2.length)];
-//        signText[2] = BurialServices.getConfig().RIPTextLine3[worldObj.rand.nextInt(BurialServices.getConfig().RIPTextLine3.length)];
-//        signText[3] = BurialServices.getConfig().RIPTextLine4[worldObj.rand.nextInt(BurialServices.getConfig().RIPTextLine4.length)];
     }
 }

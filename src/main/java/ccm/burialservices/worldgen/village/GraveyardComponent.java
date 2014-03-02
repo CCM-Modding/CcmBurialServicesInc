@@ -27,6 +27,7 @@ import ccm.burialservices.block.ToolBlock;
 import ccm.burialservices.te.ToolTE;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.ComponentVillage;
 import net.minecraft.world.gen.structure.ComponentVillageStartPiece;
@@ -113,7 +114,7 @@ public class GraveyardComponent extends ComponentVillage
             int i = this.getXWithOffset(6, 2);
             int j = this.getYWithOffset(1);
             int k = this.getZWithOffset(6, 2);
-            ToolBlock.placeShovel(world, i, j, k, Item.shovelIron);
+            ToolBlock.placeLeaning(world, i, j, k, Item.shovelIron);
         }
 
         // Graves
@@ -130,21 +131,33 @@ public class GraveyardComponent extends ComponentVillage
                 ToolBlock.placeOther(world, i, j, k, Item.swordWood, getMetaBaseOnRotation());
                 ((ToolTE)world.getBlockTileEntity(i, j, k)).addSign(getFacingBaseOnRotation(false), lines);
             }
+            for (int z = 2; z < 9; z += 2)
+                this.placeBlockAtCurrentPosition(world, Block.flowerPot.blockID, MathHelper.getRandomIntegerInRange(random, 1, 12), x, 1, z, sbb);
 
+            int[] crops = {Block.crops.blockID, Block.carrot.blockID, Block.potato.blockID};
             x = 9;
-            for (int z = 5; z < 10; z += 2)
+            for (int z = 0; z < 3; z ++)
             {
-                int i = this.getXWithOffset(x, z);
-                int k = this.getZWithOffset(x, z);
+                int i = this.getXWithOffset(x, 5 + z*2);
+                int k = this.getZWithOffset(x, 5 + z*2);
                 ToolBlock.placeOther(world, i, j, k, Item.swordWood, getMetaBaseOnRotation());
                 ((ToolTE)world.getBlockTileEntity(i, j, k)).addSign(getFacingBaseOnRotation(true), lines);
+
+                this.placeBlockAtCurrentPosition(world, Block.tilledField.blockID, 1, x-2, 0, 5 + z*2, sbb);
+                this.placeBlockAtCurrentPosition(world, Block.tilledField.blockID, 1, x-1, 0, 5 + z*2, sbb);
+                this.placeBlockAtCurrentPosition(world, crops[z], MathHelper.getRandomIntegerInRange(random, 2, 7), x-2, 1, 5 + z*2, sbb);
+                this.placeBlockAtCurrentPosition(world, crops[z], MathHelper.getRandomIntegerInRange(random, 2, 7), x-1, 1, 5 + z*2, sbb);
             }
+
+            this.placeBlockAtCurrentPosition(world, Block.flowerPot.blockID, 1 + random.nextInt(11), x, 1, 6, sbb);
+            this.placeBlockAtCurrentPosition(world, Block.flowerPot.blockID, 1 + random.nextInt(11), x, 1, 8, sbb);
         }
         return true;
     }
 
     public int getFacingBaseOnRotation(boolean b)
     {
+        System.out.println("coordBaseMode: " + coordBaseMode);
         switch (coordBaseMode)
         {
             case 0:

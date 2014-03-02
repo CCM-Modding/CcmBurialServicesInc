@@ -24,8 +24,6 @@
 package ccm.burialservices.util;
 
 import ccm.burialservices.block.ToolBlock;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.*;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
@@ -67,13 +65,13 @@ public class EventHandler
         if (itemStack != null && event.entityPlayer.isSneaking() && event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && ToolBlock.getInstance().checkMaterial(world.getBlockMaterial(event.x, event.y, event.z), itemStack.getItem()))
         {
             int x = event.x, y = event.y, z = event.z;
-            if (event.face == 1 && itemStack.getItem() instanceof ItemSpade)
+            if (event.face == 1 && (itemStack.getItem() instanceof ItemSpade || itemStack.getItem() instanceof ItemHoe))
             {
                 y++; // Cause the shovel gets placed above the block clicked
                 if (world.isAirBlock(x, y, z) && world.isBlockSolidOnSide(event.x, event.y, event.z, ForgeDirection.UP))
                 {
                     event.setCanceled(true);
-                    world.setBlock(x, y, z, ToolBlock.getInstance().blockID, ToolBlock.getInstance().getMetaForShovel(world, x, y, z), 3);
+                    world.setBlock(x, y, z, ToolBlock.getInstance().blockID, ToolBlock.getInstance().getMetaForLean(world, x, y, z), 3);
                     ToolBlock.getInstance().onBlockPlacedBy(world, x, y, z, event.entityPlayer, itemStack);
                 }
             }

@@ -58,13 +58,13 @@ public class ToolBlock extends BlockContainer
 
     public boolean checkMaterial(Material material, Item tool)
     {
-        if (tool instanceof ItemSpade) return material == Material.grass || material == Material.ground || material == Material.craftedSnow || material == Material.clay || material == Material.snow || material == Material.sand;
+        if (tool instanceof ItemSpade || tool instanceof ItemHoe) return material == Material.grass || material == Material.ground || material == Material.craftedSnow || material == Material.clay || material == Material.snow || material == Material.sand;
         else if (tool instanceof ItemAxe || tool instanceof ItemSword) return material == Material.grass || material == Material.ground || material == Material.craftedSnow || material == Material.clay || material == Material.snow || material == Material.sand || material == Material.wood;
         else if (tool instanceof ItemPickaxe) return true;
         else return false;
     }
 
-    public int getMetaForShovel(World world, int x, int y, int z)
+    public int getMetaForLean(World world, int x, int y, int z)
     {
         int meta = -1;
         for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS)
@@ -142,7 +142,7 @@ public class ToolBlock extends BlockContainer
     {
         ToolTE te = (ToolTE) blockAccess.getBlockTileEntity(x, y, z);
         if (te.getStack() == null) return;
-        if (te.getStack().getItem() instanceof ItemSpade)
+        if (te.getStack().getItem() instanceof ItemSpade || te.getStack().getItem() instanceof ItemHoe)
         {
             float height = 1.3f;
             float depth = -0.3f;
@@ -242,9 +242,9 @@ public class ToolBlock extends BlockContainer
         }
     }
 
-    public static void placeShovel(World world, int x, int y, int z, Item tool)
+    public static void placeLeaning(World world, int x, int y, int z, Item tool)
     {
-        placeOther(world, x, y, z, tool, getInstance().getMetaForShovel(world, x, y, z));
+        placeOther(world, x, y, z, tool, getInstance().getMetaForLean(world, x, y, z));
     }
 
     public static void placeOther(World world, int x, int y, int z, Item tool, int meta)
