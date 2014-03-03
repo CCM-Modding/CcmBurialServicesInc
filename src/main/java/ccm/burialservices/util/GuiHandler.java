@@ -23,10 +23,44 @@
 
 package ccm.burialservices.util;
 
-public class BSConstants
-{
-    public static final String MODID   = "BurialServices";
-    public static final String MODNAME = "CcmBurialServicesInc";
+import ccm.burialservices.BurialServices;
+import ccm.burialservices.client.gui.SwordSignGui;
+import ccm.burialservices.te.ToolTE;
+import cpw.mods.fml.common.network.IGuiHandler;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
 
-    public static final String CHANNEL_SIGN_UPDATE = MODID + "SU";
+public class GuiHandler implements IGuiHandler
+{
+    public static final GuiHandler INSTANCE = new GuiHandler();
+
+    public static final int swordSign = 0;
+
+    private GuiHandler()
+    {
+
+    }
+
+    public void init()
+    {
+        NetworkRegistry.instance().registerGuiHandler(BurialServices.instance, this);
+    }
+
+    @Override
+    public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
+    {
+        return null;
+    }
+
+    @Override
+    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
+    {
+        switch (ID)
+        {
+            case swordSign:
+                return new SwordSignGui((ToolTE) world.getBlockTileEntity(x, y, z));
+        }
+        return null;
+    }
 }

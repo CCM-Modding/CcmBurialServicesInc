@@ -30,6 +30,8 @@ import ccm.burialservices.client.renderers.ToolRenderer;
 import ccm.burialservices.te.GraveTE;
 import ccm.burialservices.te.ToolTE;
 import ccm.burialservices.util.EventHandler;
+import ccm.burialservices.util.GuiHandler;
+import ccm.burialservices.util.PacketHandler;
 import ccm.burialservices.worldgen.village.GraveyardHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.Mod;
@@ -37,16 +39,17 @@ import cpw.mods.fml.common.ModMetadata;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.VillagerRegistry;
 
 import java.util.logging.Logger;
 
-import static ccm.burialservices.util.BSConstants.MODID;
-import static ccm.burialservices.util.BSConstants.MODNAME;
+import static ccm.burialservices.util.BSConstants.*;
 
 @Mod(modid = MODID, name = MODNAME, dependencies = "required-after:NucleumOmnium")
+@NetworkMod(clientSideRequired = true, serverSideRequired = false, channels = {CHANNEL_SIGN_UPDATE}, packetHandler = PacketHandler.class)
 public class BurialServices
 {
     @Mod.Instance(MODID)
@@ -97,6 +100,7 @@ public class BurialServices
         VillagerRegistry.instance().registerVillageCreationHandler(new GraveyardHandler());
 
         EventHandler.INSTANCE.init();
+        GuiHandler.INSTANCE.init();
     }
 
     @Mod.EventHandler

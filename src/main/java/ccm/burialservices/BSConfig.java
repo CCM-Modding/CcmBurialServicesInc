@@ -23,15 +23,13 @@
 
 package ccm.burialservices;
 
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.Configuration;
 
 import java.io.File;
-import java.util.regex.Pattern;
 
 public class BSConfig
 {
-    public int toolBlockID = 270;
+    public int toolBlockID  = 270;
     public int graveBlockID = 271;
     public final String[][] RIPText;
 
@@ -77,18 +75,14 @@ public class BSConfig
 
     private String removeQuotes(String s)
     {
-        if (s.startsWith("\"") && s.endsWith("\""))
-            return s.substring(1, s.length() - 1);
-        else
-            return s;
+        if (s.startsWith("\"") && s.endsWith("\"")) return s.substring(1, s.length() - 1);
+        else return s;
     }
 
     private String addQuotes(String s)
     {
-        if (s.startsWith("\"") && s.endsWith("\""))
-            return s;
-        else
-            return "\"" + s + "\"";
+        if (s.startsWith("\"") && s.endsWith("\"")) return s;
+        else return "\"" + s + "\"";
     }
 
     public static String formatColors(String message)

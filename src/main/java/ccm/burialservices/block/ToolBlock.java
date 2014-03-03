@@ -24,10 +24,14 @@
 package ccm.burialservices.block;
 
 import ccm.burialservices.te.ToolTE;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.*;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
@@ -50,16 +54,17 @@ public class ToolBlock extends BlockContainer
     {
         super(par1, Material.circuits);
         setCreativeTab(CreativeTabs.tabBlock);
-        setHardness(0);
-        setResistance(0);
+        setHardness(1.5F);
+        setResistance(5F);
         setUnlocalizedName("ToolBlock");
         instance = this;
     }
 
     public boolean checkMaterial(Material material, Item tool)
     {
-        if (tool instanceof ItemSpade || tool instanceof ItemHoe) return material == Material.grass || material == Material.ground || material == Material.craftedSnow || material == Material.clay || material == Material.snow || material == Material.sand;
-        else if (tool instanceof ItemAxe || tool instanceof ItemSword) return material == Material.grass || material == Material.ground || material == Material.craftedSnow || material == Material.clay || material == Material.snow || material == Material.sand || material == Material.wood;
+        if (tool instanceof ItemSpade || tool instanceof ItemHoe) return material == Material.grass || material == Material.ground || material == Material.craftedSnow || material == Material.clay || material == Material.snow || material == Material.sand || material == Material.cloth;
+        else if (tool instanceof ItemAxe || tool instanceof ItemSword)
+            return material == Material.grass || material == Material.ground || material == Material.craftedSnow || material == Material.clay || material == Material.snow || material == Material.sand || material == Material.wood || material == Material.cloth;
         else if (tool instanceof ItemPickaxe) return true;
         else return false;
     }
@@ -100,7 +105,7 @@ public class ToolBlock extends BlockContainer
         {
             ToolTE inv = (ToolTE) te;
             inv.placeBlock(stack);
-            stack.stackSize--;
+            if (entityLiving instanceof EntityPlayer && !((EntityPlayer) entityLiving).capabilities.isCreativeMode) stack.stackSize--;
         }
     }
 
@@ -255,5 +260,17 @@ public class ToolBlock extends BlockContainer
         {
             ((ToolTE) te).placeBlock(new ItemStack(tool, 1, world.rand.nextInt(tool.getMaxDamage())));
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public boolean addBlockDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer effectRenderer)
+    {
+        return true;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public boolean addBlockHitEffects(World worldObj, MovingObjectPosition target, EffectRenderer effectRenderer)
+    {
+        return true;
     }
 }

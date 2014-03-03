@@ -23,14 +23,11 @@
 
 package ccm.burialservices.te;
 
-import com.google.common.base.Joiner;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.entity.EntityOtherPlayerMP;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NBTTagCompound;
@@ -39,14 +36,18 @@ import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
+
 public class GraveTE extends TileEntity
 {
+    private ItemStack   holding  = null;
     private ItemStack[] contents = new ItemStack[0];
-    private String username = "";
-    private ResourceLocation locationSkin;
+    private String      username = "";
+    private ResourceLocation skin;
 
     public GraveTE()
     {
@@ -58,15 +59,9 @@ public class GraveTE extends TileEntity
         setWorldObj(world);
     }
 
-    @SideOnly(Side.CLIENT)
-    public ResourceLocation getLocationSkin()
+    public ItemStack getHolding()
     {
-        return locationSkin;
-    }
-
-    public ItemStack[] getContents()
-    {
-        return contents;
+        return holding;
     }
 
     public void readFromNBT(NBTTagCompound tag)
@@ -79,6 +74,7 @@ public class GraveTE extends TileEntity
             contents[i] = ItemStack.loadItemStackFromNBT((NBTTagCompound) nbttaglist.tagAt(i));
         }
         username = tag.getString("username");
+        holding = ItemStack.loadItemStackFromNBT(tag.getCompoundTag("holding"));
     }
 
     public void writeToNBT(NBTTagCompound tag)
@@ -92,6 +88,7 @@ public class GraveTE extends TileEntity
         }
         tag.setTag("contents", nbttaglist);
         tag.setString("username", username);
+        tag.setCompoundTag("holding", holding == null ? new NBTTagCompound() : holding.writeToNBT(new NBTTagCompound()));
     }
 
     public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt)
@@ -103,6 +100,7 @@ public class GraveTE extends TileEntity
             contents[i] = ItemStack.loadItemStackFromNBT((NBTTagCompound) nbttaglist.tagAt(i));
         }
         username = pkt.data.getString("username");
+        holding = ItemStack.loadItemStackFromNBT(pkt.data.getCompoundTag("holding"));
     }
 
     public Packet getDescriptionPacket()
@@ -116,6 +114,7 @@ public class GraveTE extends TileEntity
         }
         root.setTag("contents", nbttaglist);
         root.setString("username", username);
+        root.setCompoundTag("holding", holding == null ? new NBTTagCompound() : holding.writeToNBT(new NBTTagCompound()));
 
         return new Packet132TileEntityData(xCoord, yCoord, zCoord, 15, root);
     }
@@ -125,14 +124,87 @@ public class GraveTE extends TileEntity
         username = entityLiving.getEntityName();
     }
 
-    public boolean willHold(Item item)
+    public static boolean willHold(ItemStack itemStack)
     {
+        if (itemStack == null) return false;
+        Item item = itemStack.getItem();
         return item instanceof ItemTool || item instanceof ItemHoe || item instanceof ItemSword;
     }
 
     public boolean onActivated(EntityPlayer player, int side)
     {
-        if (player.getHeldItem() != null && willHold(player.getHeldItem().getItem())) contents = new ItemStack[] {player.getHeldItem()};
-        return true;
+        //if (player.getHeldItem() != null && willHold(player.getHeldItem())) contents = new ItemStack[] {player.getHeldItem()};
+        return false;
+    }
+
+    public void fillFromDeath(EntityPlayer entityPlayer, ArrayList<EntityItem> drops)
+    {
+        username = entityPlayer.username;
+
+        int i = 0;
+        holding = entityPlayer.getHeldItem();
+        while (!GraveTE.willHold(holding))
+        {
+            if (i == drops.size()) break;
+            holding = drops.get(i++).getEntityItem();
+        }
+        if (!GraveTE.willHold(holding)) holding = null;
+
+        contents = new ItemStack[drops.size()];
+        for (i = 0; i < drops.size(); i++)
+        {
+            contents[i] = drops.get(i).getEntityItem();
+        }
+    }
+
+    public ResourceLocation getLocationSkin()
+    {
+        if (skin == null) skin = AbstractClientPlayer.getLocationSkin(username);
+        if (skin == null) skin = AbstractClientPlayer.locationStevePng;
+        return skin;
+    }
+
+    public void invalidate()
+    {
+        super.invalidate();
+
+        if (worldObj.isRemote) return;
+        for (ItemStack itemStack : contents)
+        {
+            if (itemStack != null)
+            {
+                float f = worldObj.rand.nextFloat() * 0.8F + 0.1F;
+                float f1 = worldObj.rand.nextFloat() * 0.8F + 0.1F;
+                EntityItem entityitem;
+
+                for (float f2 = worldObj.rand.nextFloat() * 0.8F + 0.1F; itemStack.stackSize > 0; worldObj.spawnEntityInWorld(entityitem))
+                {
+                    int k1 = worldObj.rand.nextInt(21) + 10;
+
+                    if (k1 > itemStack.stackSize)
+                    {
+                        k1 = itemStack.stackSize;
+                    }
+
+                    itemStack.stackSize -= k1;
+                    entityitem = new EntityItem(worldObj, (double) ((float) xCoord + f), (double) ((float) yCoord + f1), (double) ((float) zCoord + f2), new ItemStack(itemStack.itemID, k1, itemStack.getItemDamage()));
+                    float f3 = 0.05F;
+                    entityitem.motionX = (double) ((float) worldObj.rand.nextGaussian() * f3);
+                    entityitem.motionY = (double) ((float) worldObj.rand.nextGaussian() * f3 + 0.2F);
+                    entityitem.motionZ = (double) ((float) worldObj.rand.nextGaussian() * f3);
+
+                    if (itemStack.hasTagCompound())
+                    {
+                        entityitem.getEntityItem().setTagCompound((NBTTagCompound) itemStack.getTagCompound().copy());
+                    }
+                }
+            }
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public AxisAlignedBB getRenderBoundingBox()
+    {
+        return AxisAlignedBB.getAABBPool().getAABB(xCoord - 1, yCoord - 1, zCoord - 1, xCoord + 2, yCoord + 2, zCoord + 2);
     }
 }

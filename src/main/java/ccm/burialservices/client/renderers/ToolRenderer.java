@@ -42,8 +42,8 @@ import org.lwjgl.opengl.GL12;
 public class ToolRenderer extends TileEntitySpecialRenderer
 {
     private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
-    private static final ResourceLocation SIGNTEXTURE = new ResourceLocation("textures/entity/sign.png");
-    private final ModelSign modelSign = new ModelSign();
+    private static final ResourceLocation SIGNTEXTURE    = new ResourceLocation("textures/entity/sign.png");
+    private final        ModelSign        modelSign      = new ModelSign();
 
     @Override
     public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float tickTime)
@@ -62,63 +62,91 @@ public class ToolRenderer extends TileEntitySpecialRenderer
             }
         }
 
-        if (te.getStack().getItem() instanceof ItemSword && te.getSignFacing() != -1)
+        if (te.getStack().getItem() instanceof ItemSword && te.sign1Facing != -1)
+        {
+            renderSign(x, y, z, tickTime, te.sign1Facing, te.sign1Text, te.getBlockMetadata());
+        }
+
+        if (te.getStack().getItem() instanceof ItemSword && te.sign2Facing != -1)
+        {
+            renderSign(x, y, z, tickTime, te.sign2Facing, te.sign2Text, te.getBlockMetadata());
+        }
+    }
+
+    private void renderSign(double x, double y, double z, float tickTime, int facing, String[] signText, int meta)
+    {
+        GL11.glPushMatrix();
+        float f1 = 0.6666667F;
+        float f2 = 0.0F;
+
+        switch (facing)
+        {
+            case 0:
+            case 8:
+                f2 = -90f;
+                break;
+            case 1:
+            case 7:
+                f2 = 90f;
+                break;
+            case 2:
+            case 5:
+                f2 = 180f;
+        }
+
+        if (meta >= 2)
+        {
+            GL11.glTranslated(0, -1.2, 0);
+        }
+
+        GL11.glTranslatef((float) x + 0.5F, (float) y + 0.75F * f1, (float) z + 0.5F);
+        GL11.glRotatef(-f2, 0.0F, 1.0F, 0.0F);
+
+        GL11.glTranslatef(0.0F, -0.3125F, -0.4375F);
+        GL11.glTranslatef(0f, 0.8F, 0.5f);
+        this.modelSign.signStick.showModel = false;
+
+        if (facing > 4)
+        {
+            if (meta >= 2) GL11.glTranslated(-0.6, 0, 0);
+            //GL11.glTranslated(b ? -0.4 : -0.6, 0, 0);
+
+            if (meta == 2 && facing == 7) GL11.glTranslated(1.2, 0, 0);
+            else if (meta == 3 && facing == 8) GL11.glTranslated(1.2, 0, 0);
+            else if (meta == 4 && facing == 6) GL11.glTranslated(1.2, 0, 0);
+            else if (meta == 5 && facing == 5) GL11.glTranslated(1.2, 0, 0);
+        }
+
+        this.bindTexture(SIGNTEXTURE);
+        GL11.glPushMatrix();
+        GL11.glScalef(f1, -f1, -f1);
+        this.modelSign.renderSign();
+        GL11.glPopMatrix();
+        FontRenderer fontrenderer = this.getFontRenderer();
+        f2 = 0.016666668F * f1;
+        GL11.glTranslatef(0.0F, 0.5F * f1, 0.07F * f1);
+        GL11.glScalef(f2, -f2, f2);
+        GL11.glNormal3f(0.0F, 0.0F, -1.0F * f2);
+        GL11.glDepthMask(false);
+        byte b0 = 0;
+
+        for (int j = 0; j < signText.length; ++j)
         {
             GL11.glPushMatrix();
-            float f1 = 0.6666667F;
-            float f2 = 0.0F;
-            //System.out.println(te.getSignFacing());
-
-            if (te.getSignFacing() == 0)
+            String s = signText[j];
+            int width = fontrenderer.getStringWidth(s);
+            if (width > 95)
             {
-                f2 = -90f;
+                float f = 1f - ((width) * 0.0015f);
+                GL11.glScalef(f, f, f);
             }
-            else if (te.getSignFacing() == 1)
-            {
-                f2 = 90f;
-            }
-            else if (te.getSignFacing() == 2)
-            {
-                f2 = 180f;
-            }
-
-            GL11.glTranslatef((float)x + 0.5F, (float)y + 0.75F * f1, (float)z + 0.5F);
-            GL11.glRotatef(-f2, 0.0F, 1.0F, 0.0F);
-            GL11.glTranslatef(0.0F, -0.3125F, -0.4375F);
-            GL11.glTranslatef(0f, 0.8F, 0.5f);
-            this.modelSign.signStick.showModel = false;
-
-            this.bindTexture(SIGNTEXTURE);
-            GL11.glPushMatrix();
-            GL11.glScalef(f1, -f1, -f1);
-            this.modelSign.renderSign();
-            GL11.glPopMatrix();
-            FontRenderer fontrenderer = this.getFontRenderer();
-            f2 = 0.016666668F * f1;
-            GL11.glTranslatef(0.0F, 0.5F * f1, 0.07F * f1);
-            GL11.glScalef(f2, -f2, f2);
-            GL11.glNormal3f(0.0F, 0.0F, -1.0F * f2);
-            GL11.glDepthMask(false);
-            byte b0 = 0;
-
-            for (int j = 0; j < te.getSignText().length; ++j)
-            {
-                GL11.glPushMatrix();
-                String s = te.getSignText()[j];
-                int width = fontrenderer.getStringWidth(s);
-                if (width > 95)
-                {
-                    float f = 1f - ((width) * 0.0015f);
-                    GL11.glScalef(f, f, f);
-                }
-                fontrenderer.drawString(s, -width / 2, j * 10 - te.getSignText().length * 5, b0);
-                GL11.glPopMatrix();
-            }
-
-            GL11.glDepthMask(true);
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            fontrenderer.drawString(s, -width / 2, j * 10 - signText.length * 5, b0);
             GL11.glPopMatrix();
         }
+
+        GL11.glDepthMask(true);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GL11.glPopMatrix();
     }
 
     public static void doRenderPass(int i, int meta, ItemStack stack, double x, double y, double z)

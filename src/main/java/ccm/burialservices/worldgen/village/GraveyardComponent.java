@@ -25,6 +25,7 @@ package ccm.burialservices.worldgen.village;
 
 import ccm.burialservices.block.ToolBlock;
 import ccm.burialservices.te.ToolTE;
+import ccm.burialservices.util.Helper;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.MathHelper;
@@ -105,6 +106,15 @@ public class GraveyardComponent extends ComponentVillage
         // Torch
         this.placeBlockAtCurrentPosition(world, Block.torchWood.blockID, Block.torchWood.blockID, 8, 3, 1, sbb);
 
+        // Hoe
+        {
+            int i = this.getXWithOffset(9, 2);
+            int j = this.getYWithOffset(1);
+            int k = this.getZWithOffset(9, 2);
+            ToolBlock.placeLeaning(world, i, j, k, Helper.getRandomFromSet(random, Item.hoeWood, Item.hoeStone, Item.hoeIron, Item.hoeGold, Item.hoeDiamond));
+        }
+        this.placeBlockAtCurrentPosition(world, Block.torchWood.blockID, Block.torchWood.blockID, 8, 3, 1, sbb);
+
         // Door
         this.fillWithAir(world, sbb, 7, 1, 1, 7, 2, 1);
         this.placeDoorAtCurrentPosition(world, sbb, random, 7, 1, 1, this.getMetadataWithOffset(Block.doorWood.blockID, 0));
@@ -114,7 +124,7 @@ public class GraveyardComponent extends ComponentVillage
             int i = this.getXWithOffset(6, 2);
             int j = this.getYWithOffset(1);
             int k = this.getZWithOffset(6, 2);
-            ToolBlock.placeLeaning(world, i, j, k, Item.shovelIron);
+            ToolBlock.placeLeaning(world, i, j, k, Helper.getRandomFromSet(random, Item.shovelWood, Item.shovelStone, Item.shovelIron, Item.shovelGold, Item.shovelDiamond));
         }
 
         // Graves
@@ -128,25 +138,25 @@ public class GraveyardComponent extends ComponentVillage
             {
                 int i = this.getXWithOffset(x, z);
                 int k = this.getZWithOffset(x, z);
-                ToolBlock.placeOther(world, i, j, k, Item.swordWood, getMetaBaseOnRotation());
-                ((ToolTE)world.getBlockTileEntity(i, j, k)).addSign(getFacingBaseOnRotation(false), lines);
+                ToolBlock.placeOther(world, i, j, k, Helper.getRandomFromSet(random, Item.swordWood, Item.swordStone, Item.swordGold), getMetaBaseOnRotation());
+                ((ToolTE) world.getBlockTileEntity(i, j, k)).addSign(getFacingBaseOnRotation(false), lines);
             }
             for (int z = 2; z < 9; z += 2)
                 this.placeBlockAtCurrentPosition(world, Block.flowerPot.blockID, MathHelper.getRandomIntegerInRange(random, 1, 12), x, 1, z, sbb);
 
             int[] crops = {Block.crops.blockID, Block.carrot.blockID, Block.potato.blockID};
             x = 9;
-            for (int z = 0; z < 3; z ++)
+            for (int z = 0; z < 3; z++)
             {
-                int i = this.getXWithOffset(x, 5 + z*2);
-                int k = this.getZWithOffset(x, 5 + z*2);
+                int i = this.getXWithOffset(x, 5 + z * 2);
+                int k = this.getZWithOffset(x, 5 + z * 2);
                 ToolBlock.placeOther(world, i, j, k, Item.swordWood, getMetaBaseOnRotation());
-                ((ToolTE)world.getBlockTileEntity(i, j, k)).addSign(getFacingBaseOnRotation(true), lines);
+                ((ToolTE) world.getBlockTileEntity(i, j, k)).addSign(getFacingBaseOnRotation(true), lines);
 
-                this.placeBlockAtCurrentPosition(world, Block.tilledField.blockID, 1, x-2, 0, 5 + z*2, sbb);
-                this.placeBlockAtCurrentPosition(world, Block.tilledField.blockID, 1, x-1, 0, 5 + z*2, sbb);
-                this.placeBlockAtCurrentPosition(world, crops[z], MathHelper.getRandomIntegerInRange(random, 2, 7), x-2, 1, 5 + z*2, sbb);
-                this.placeBlockAtCurrentPosition(world, crops[z], MathHelper.getRandomIntegerInRange(random, 2, 7), x-1, 1, 5 + z*2, sbb);
+                this.placeBlockAtCurrentPosition(world, Block.tilledField.blockID, 1, x - 2, 0, 5 + z * 2, sbb);
+                this.placeBlockAtCurrentPosition(world, Block.tilledField.blockID, 1, x - 1, 0, 5 + z * 2, sbb);
+                this.placeBlockAtCurrentPosition(world, crops[z], MathHelper.getRandomIntegerInRange(random, 2, 7), x - 2, 1, 5 + z * 2, sbb);
+                this.placeBlockAtCurrentPosition(world, crops[z], MathHelper.getRandomIntegerInRange(random, 2, 7), x - 1, 1, 5 + z * 2, sbb);
             }
 
             this.placeBlockAtCurrentPosition(world, Block.flowerPot.blockID, 1 + random.nextInt(11), x, 1, 6, sbb);
@@ -157,7 +167,6 @@ public class GraveyardComponent extends ComponentVillage
 
     public int getFacingBaseOnRotation(boolean b)
     {
-        System.out.println("coordBaseMode: " + coordBaseMode);
         switch (coordBaseMode)
         {
             case 0:

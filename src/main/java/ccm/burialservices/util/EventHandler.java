@@ -23,12 +23,14 @@
 
 package ccm.burialservices.util;
 
+import ccm.burialservices.BurialServices;
+import ccm.burialservices.block.GraveBlock;
 import ccm.burialservices.block.ToolBlock;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import ccm.burialservices.te.ToolTE;
+import cpw.mods.fml.common.network.FMLNetworkHandler;
+import cpw.mods.fml.common.network.PacketDispatcher;
 import net.minecraft.item.*;
 import net.minecraft.world.World;
-import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.EventPriority;
@@ -38,8 +40,8 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 public class EventHandler
 {
-    public static final EventHandler INSTANCE = new EventHandler();
-    public boolean forceRender = false;
+    public static final EventHandler INSTANCE    = new EventHandler();
+    public              boolean      forceRender = false;
 
     private EventHandler() {}
 
@@ -56,8 +58,7 @@ public class EventHandler
     {
         World world = event.entityPlayer.getEntityWorld();
         if (world.isRemote) return;
-
-
+        event.setCanceled(GraveBlock.place(event.entityPlayer.worldObj, event.entityPlayer, event.drops));
     }
 
     /**
@@ -67,9 +68,29 @@ public class EventHandler
     public void clickEvent(PlayerInteractEvent event)
     {
         World world = event.entityPlayer.getEntityWorld();
-        if (world.isRemote) return;
+
         ItemStack itemStack = event.entityPlayer.getHeldItem();
-        if (itemStack != null && event.entityPlayer.isSneaking() && event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && ToolBlock.getInstance().checkMaterial(world.getBlockMaterial(event.x, event.y, event.z), itemStack.getItem()))
+
+        if (itemStack == null || event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) return;
+
+        if (itemStack.getItem() instanceof ItemSign && event.face != 1 && event.face != 0)
+        {
+            if (world.getBlockId(event.x, event.y, event.z) == ToolBlock.getInstance().blockID)
+            {
+                ToolTE te = (ToolTE) world.getBlockTileEntity(event.x, event.y, event.z);
+
+                if (te.getStack().getItem() instanceof ItemSword && te.addSign(3 + event.face) != -1)
+                {
+                    if (!event.entityPlayer.capabilities.isCreativeMode) itemStack.stackSize--;
+                    if (!world.isRemote) PacketDispatcher.sendPacketToAllInDimension(te.getDescriptionPacket(), te.worldObj.provider.dimensionId);
+                    event.setCanceled(!world.isRemote);
+                    FMLNetworkHandler.openGui(event.entityPlayer, BurialServices.instance, GuiHandler.swordSign, world, event.x, event.y, event.z);
+                }
+            }
+        }
+
+        if (world.isRemote) return;
+        if (event.entityPlayer.isSneaking() && ToolBlock.getInstance().checkMaterial(world.getBlockMaterial(event.x, event.y, event.z), itemStack.getItem()))
         {
             int x = event.x, y = event.y, z = event.z;
             if (event.face == 1 && (itemStack.getItem() instanceof ItemSpade || itemStack.getItem() instanceof ItemHoe))
@@ -108,7 +129,6 @@ public class EventHandler
                     int meta = direction.getOpposite().ordinal();
                     if (meta == 0)
                     {
-                        System.out.println(direction.getOpposite());
                         meta = world.rand.nextInt(2);
                     }
                     event.setCanceled(true);

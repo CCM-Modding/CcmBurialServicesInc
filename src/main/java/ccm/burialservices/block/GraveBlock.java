@@ -24,16 +24,22 @@
 package ccm.burialservices.block;
 
 import ccm.burialservices.te.GraveTE;
-import ccm.burialservices.te.ToolTE;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
+import java.util.ArrayList;
 
 public class GraveBlock extends BlockContainer
 {
@@ -48,8 +54,8 @@ public class GraveBlock extends BlockContainer
     {
         super(par1, Material.ground);
         setCreativeTab(CreativeTabs.tabBlock);
-        setHardness(0);
-        setResistance(0);
+        setHardness(1.5F);
+        setResistance(5F);
         setUnlocalizedName("GraveBlock");
 
         instance = this;
@@ -92,11 +98,50 @@ public class GraveBlock extends BlockContainer
 
     public void setBlockBoundsBasedOnState(IBlockAccess blockAccess, int x, int y, int z)
     {
-        this.setBlockBounds(0, 0, 0, 1, 0.4f, 2);
+        switch (blockAccess.getBlockMetadata(x, y, z))
+        {
+            case 0:
+                this.setBlockBounds(0, 0, 0, 1, 0.4f, 2);
+                break;
+            case 1:
+                this.setBlockBounds(0, 0, 0, 2, 0.4f, 1);
+                break;
+            case 2:
+                this.setBlockBounds(0, 0, -1, 1, 0.4f, 1);
+                break;
+            case 3:
+                this.setBlockBounds(-1, 0, 0, 1, 0.4f, 1);
+                break;
+        }
     }
 
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float par7, float par8, float par9)
     {
         return ((GraveTE) world.getBlockTileEntity(x, y, z)).onActivated(player, side);
+    }
+
+    public static boolean place(World world, EntityPlayer entityPlayer, ArrayList<EntityItem> drops)
+    {
+        int x = (int) entityPlayer.posX;
+        int y = (int) entityPlayer.posY;
+        int z = (int) entityPlayer.posZ;
+
+        world.setBlock(x, y, z, GraveBlock.getInstance().blockID, world.rand.nextInt(4), 3);
+
+        ((GraveTE) world.getBlockTileEntity(x, y, z)).fillFromDeath(entityPlayer, drops);
+
+        return true;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public boolean addBlockDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer effectRenderer)
+    {
+        return true;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public boolean addBlockHitEffects(World worldObj, MovingObjectPosition target, EffectRenderer effectRenderer)
+    {
+        return true;
     }
 }

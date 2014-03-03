@@ -23,10 +23,29 @@
 
 package ccm.burialservices.util;
 
-public class BSConstants
-{
-    public static final String MODID   = "BurialServices";
-    public static final String MODNAME = "CcmBurialServicesInc";
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Random;
 
-    public static final String CHANNEL_SIGN_UPDATE = MODID + "SU";
+public class Helper
+{
+    public static <T> T getRandomFromSet(Random random, T... collection)
+    {
+        return getRandomFromSet(random, Arrays.asList(collection));
+    }
+
+    public static <T> T getRandomFromSet(Random random, Collection<T> collection)
+    {
+        if (collection.isEmpty()) return null;
+        if (collection.size() == 1) //noinspection unchecked
+            return (T) collection.toArray()[0];
+        int item = random.nextInt(collection.size());
+        int i = 0;
+        for (T obj : collection)
+        {
+            if (i == item) return obj;
+            i = i + 1;
+        }
+        return null;
+    }
 }

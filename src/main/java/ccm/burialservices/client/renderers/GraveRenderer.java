@@ -24,22 +24,18 @@
 package ccm.burialservices.client.renderers;
 
 import ccm.burialservices.te.GraveTE;
-import ccm.burialservices.util.EventHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.event.Event;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -62,10 +58,27 @@ public class GraveRenderer extends TileEntitySpecialRenderer
         GL11.glTranslated(x, y, z); //Center to block
 
         ResourceLocation skin = te.getLocationSkin();
-        if (skin == null) skin = AbstractClientPlayer.locationStevePng;
 
         float f5 = 0.9F;
         float f6 = 0.0625F;
+
+        switch (te.getBlockMetadata())
+        {
+            case 0:
+                break;
+            case 1:
+                GL11.glRotatef(90F, 0.0F, 1.0F, 0.0F);
+                GL11.glTranslated(-1, 0, 0);
+                break;
+            case 2:
+                GL11.glRotatef(180F, 0.0F, 1.0F, 0.0F);
+                GL11.glTranslated(-1, 0, -1);
+                break;
+            case 3:
+                GL11.glRotatef(-90F, 0.0F, 1.0F, 0.0F);
+                GL11.glTranslated(0, 0, -1);
+                break;
+        }
 
         GL11.glTranslated(0.5, 0.1d, 0.5);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -86,26 +99,21 @@ public class GraveRenderer extends TileEntitySpecialRenderer
 
         GL11.glPopMatrix();
 
-        if (te.getContents().length > 0)
+        ItemStack is = te.getHolding();
+        if (is != null)
         {
-            ItemStack is = te.getContents()[0];
-
-            if (is != null)
+            renderItemHolding(0, te.getBlockMetadata(), is, x, y, z, tickTime);
+            if (is.getItem().requiresMultipleRenderPasses())
             {
-                renderItemHolding(0, is, x, y, z, tickTime);
-                if (is.getItem().requiresMultipleRenderPasses())
+                for (int i = 1; i < is.getItem().getRenderPasses(is.getItemDamage()); i++)
                 {
-                    for (int i = 1; i < is.getItem().getRenderPasses(is.getItemDamage()); i++)
-                    {
-                        renderItemHolding(i, is, x, y, z, tickTime);
-                    }
+                    renderItemHolding(i, te.getBlockMetadata(), is, x, y, z, tickTime);
                 }
             }
         }
-
     }
 
-    private static void renderItemHolding(int i, ItemStack stack, double x, double y, double z, float tickTime)
+    private static void renderItemHolding(int i, int meta, ItemStack stack, double x, double y, double z, float tickTime)
     {
         Icon icon = stack.getItem().getIcon(stack, i);
 
@@ -113,8 +121,36 @@ public class GraveRenderer extends TileEntitySpecialRenderer
 
         GL11.glPushMatrix();
         GL11.glTranslated(x, y, z); //Center to block
-        GL11.glTranslated(0.5, 0.1d, 0.5);
+
+        switch (meta)
+        {
+            case 0:
+                break;
+            case 1:
+                GL11.glRotatef(90F, 0.0F, 1.0F, 0.0F);
+                GL11.glTranslated(-1, 0, 0);
+                break;
+            case 2:
+                GL11.glRotatef(180F, 0.0F, 1.0F, 0.0F);
+                GL11.glTranslated(-1, 0, -1);
+                break;
+            case 3:
+                GL11.glRotatef(-90F, 0.0F, 1.0F, 0.0F);
+                GL11.glTranslated(0, 0, -1);
+                break;
+        }
+
+        if (stack.getItem() instanceof ItemSword)
+        {
+            GL11.glTranslated(0.44, 0.1d, 1.85);
+            GL11.glRotatef(180F, 0.0F, 1.0F, 0.0F);
+        }
+        else
+        {
+            GL11.glTranslated(0.5, 0.1d, 0.5);
+        }
         GL11.glRotatef(90F, 1.0F, 0.0F, 0.0F);
+
 
         TextureManager texturemanager = Minecraft.getMinecraft().getTextureManager();
         texturemanager.bindTexture(texturemanager.getResourceLocation(stack.getItemSpriteNumber()));
