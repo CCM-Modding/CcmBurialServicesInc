@@ -29,6 +29,7 @@ import java.io.File;
 
 public class BSConfig
 {
+    public int villagerID   = 456418; //Rnd number, must be unique.
     public int toolBlockID  = 270;
     public int graveBlockID = 271;
     public final String[][] RIPText;
@@ -39,6 +40,8 @@ public class BSConfig
 
         toolBlockID = config.getBlock("toolBlockID", toolBlockID).getInt();
         graveBlockID = config.getBlock("graveBlockID", graveBlockID).getInt();
+
+        villagerID = config.get(Configuration.CATEGORY_BLOCK, "villagerID", villagerID, "Not a real blockID but must be equal on server and client!").getInt();
 
         String[] RIPTextLine1 = {"RIP", "Here lies"};
         String[] RIPTextLine2 = {"Dries007", "ClayCorp", "Morton", "CaptainShadows", "Squidward", "Testificate", "John Doe", "Jane Doe", "Firefly", "Scrubs", "Neo", "Ned Stark", "Villager #1", "Villager #2", "Villager #3", "Villager #4", "Villager #5", "Villager #6", "Villager #7", "Villager #8", "Villager #9"};

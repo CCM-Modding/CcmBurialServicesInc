@@ -24,6 +24,7 @@
 package ccm.burialservices.util;
 
 import ccm.burialservices.BurialServices;
+import ccm.burialservices.client.gui.GraveUpgradeGui;
 import ccm.burialservices.client.gui.SwordSignGui;
 import ccm.burialservices.te.ToolTE;
 import cpw.mods.fml.common.network.IGuiHandler;
@@ -35,7 +36,9 @@ public class GuiHandler implements IGuiHandler
 {
     public static final GuiHandler INSTANCE = new GuiHandler();
 
-    public static final int swordSign = 0;
+    public static final int swordSign      = 0;
+    public static final int graveUpgradeID = 1;
+    public static final int undertakerID   = 2;
 
     private GuiHandler()
     {
@@ -60,6 +63,10 @@ public class GuiHandler implements IGuiHandler
         {
             case swordSign:
                 return new SwordSignGui((ToolTE) world.getBlockTileEntity(x, y, z));
+            case graveUpgradeID:
+                return new GraveUpgradeGui(false);
+            case undertakerID:
+                return new GraveUpgradeGui(true);
         }
         return null;
     }

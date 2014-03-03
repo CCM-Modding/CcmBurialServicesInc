@@ -24,6 +24,8 @@
 package ccm.burialservices.client.renderers;
 
 import ccm.burialservices.te.GraveTE;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -39,6 +41,7 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+@SideOnly(Side.CLIENT)
 public class GraveRenderer extends TileEntitySpecialRenderer
 {
     private final ModelBiped modelBiped = new ModelBiped();

@@ -23,9 +23,10 @@
 
 package ccm.burialservices.worldgen.village;
 
+import ccm.burialservices.BurialServices;
 import ccm.burialservices.block.ToolBlock;
 import ccm.burialservices.te.ToolTE;
-import ccm.burialservices.util.Helper;
+import ccm.nucleumOmnium.helpers.MiscHelper;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.MathHelper;
@@ -111,7 +112,7 @@ public class GraveyardComponent extends ComponentVillage
             int i = this.getXWithOffset(9, 2);
             int j = this.getYWithOffset(1);
             int k = this.getZWithOffset(9, 2);
-            ToolBlock.placeLeaning(world, i, j, k, Helper.getRandomFromSet(random, Item.hoeWood, Item.hoeStone, Item.hoeIron, Item.hoeGold, Item.hoeDiamond));
+            ToolBlock.placeLeaning(world, i, j, k, MiscHelper.getRandomFromSet(random, Item.hoeWood, Item.hoeStone, Item.hoeIron, Item.hoeGold, Item.hoeDiamond));
         }
         this.placeBlockAtCurrentPosition(world, Block.torchWood.blockID, Block.torchWood.blockID, 8, 3, 1, sbb);
 
@@ -124,7 +125,7 @@ public class GraveyardComponent extends ComponentVillage
             int i = this.getXWithOffset(6, 2);
             int j = this.getYWithOffset(1);
             int k = this.getZWithOffset(6, 2);
-            ToolBlock.placeLeaning(world, i, j, k, Helper.getRandomFromSet(random, Item.shovelWood, Item.shovelStone, Item.shovelIron, Item.shovelGold, Item.shovelDiamond));
+            ToolBlock.placeLeaning(world, i, j, k, MiscHelper.getRandomFromSet(random, Item.shovelWood, Item.shovelStone, Item.shovelIron, Item.shovelGold, Item.shovelDiamond));
         }
 
         // Graves
@@ -138,7 +139,7 @@ public class GraveyardComponent extends ComponentVillage
             {
                 int i = this.getXWithOffset(x, z);
                 int k = this.getZWithOffset(x, z);
-                ToolBlock.placeOther(world, i, j, k, Helper.getRandomFromSet(random, Item.swordWood, Item.swordStone, Item.swordGold), getMetaBaseOnRotation());
+                ToolBlock.placeOther(world, i, j, k, MiscHelper.getRandomFromSet(random, Item.swordWood, Item.swordStone, Item.swordGold), getMetaBaseOnRotation());
                 ((ToolTE) world.getBlockTileEntity(i, j, k)).addSign(getFacingBaseOnRotation(false), lines);
             }
             for (int z = 2; z < 9; z += 2)
@@ -162,7 +163,14 @@ public class GraveyardComponent extends ComponentVillage
             this.placeBlockAtCurrentPosition(world, Block.flowerPot.blockID, 1 + random.nextInt(11), x, 1, 6, sbb);
             this.placeBlockAtCurrentPosition(world, Block.flowerPot.blockID, 1 + random.nextInt(11), x, 1, 8, sbb);
         }
+
+        this.spawnVillagers(world, sbb, 5, 1, 5, 1);
         return true;
+    }
+
+    protected int getVillagerType(int par1)
+    {
+        return BurialServices.getConfig().villagerID;
     }
 
     public int getFacingBaseOnRotation(boolean b)

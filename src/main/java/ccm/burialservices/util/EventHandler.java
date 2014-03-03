@@ -27,14 +27,20 @@ import ccm.burialservices.BurialServices;
 import ccm.burialservices.block.GraveBlock;
 import ccm.burialservices.block.ToolBlock;
 import ccm.burialservices.te.ToolTE;
+import ccm.nucleumOmnium.helpers.MiscHelper;
+import ccm.nucleumOmnium.helpers.NetworkHelper;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.FMLNetworkHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.item.*;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.EventPriority;
 import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
@@ -59,6 +65,24 @@ public class EventHandler
         World world = event.entityPlayer.getEntityWorld();
         if (world.isRemote) return;
         event.setCanceled(GraveBlock.place(event.entityPlayer.worldObj, event.entityPlayer, event.drops));
+    }
+
+    /**
+     * For catching interactions with the Undertaker
+     */
+    @ForgeSubscribe
+    public void interactEvent(EntityInteractEvent event)
+    {
+        if (event.target instanceof EntityVillager && ((EntityVillager) event.target).getProfession() == BurialServices.getConfig().villagerID)
+        {
+            if (FMLCommonHandler.instance().getEffectiveSide().isServer())
+            {
+                PacketDispatcher.sendPacketToPlayer(NetworkHelper.makeNBTPacket(BSConstants.CHANNEL_GRAVE_UPGRADE, MiscHelper.getPersistentDataTag(event.entityPlayer, BSConstants.NBT_PLAYER_GRAVE_DATA)), (Player) event.entityPlayer);
+                event.setCanceled(true);
+            }
+            FMLNetworkHandler.openGui(event.entityPlayer, BurialServices.instance, GuiHandler.undertakerID, event.entityPlayer.worldObj, 0, 0, 0);
+            BurialServices.proxy.interactEvent(event);
+        }
     }
 
     /**

@@ -23,29 +23,21 @@
 
 package ccm.burialservices.util;
 
-import java.util.Arrays;
-import java.util.Collection;
+import ccm.burialservices.BurialServices;
+import cpw.mods.fml.common.registry.VillagerRegistry;
+import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.village.MerchantRecipeList;
+
 import java.util.Random;
 
-public class Helper
+public class VillageTradeHandler implements VillagerRegistry.IVillageTradeHandler
 {
-    public static <T> T getRandomFromSet(Random random, T... collection)
+    @Override
+    public void manipulateTradesForVillager(EntityVillager villager, MerchantRecipeList recipeList, Random random)
     {
-        return getRandomFromSet(random, Arrays.asList(collection));
-    }
-
-    public static <T> T getRandomFromSet(Random random, Collection<T> collection)
-    {
-        if (collection.isEmpty()) return null;
-        if (collection.size() == 1) //noinspection unchecked
-            return (T) collection.toArray()[0];
-        int item = random.nextInt(collection.size());
-        int i = 0;
-        for (T obj : collection)
+        if (villager.getProfession() == BurialServices.getConfig().villagerID)
         {
-            if (i == item) return obj;
-            i = i + 1;
+            recipeList.clear();
         }
-        return null;
     }
 }

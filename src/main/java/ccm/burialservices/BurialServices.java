@@ -23,40 +23,31 @@
 
 package ccm.burialservices;
 
-import ccm.burialservices.block.GraveBlock;
-import ccm.burialservices.block.ToolBlock;
-import ccm.burialservices.client.renderers.GraveRenderer;
-import ccm.burialservices.client.renderers.ToolRenderer;
-import ccm.burialservices.te.GraveTE;
-import ccm.burialservices.te.ToolTE;
-import ccm.burialservices.util.EventHandler;
-import ccm.burialservices.util.GuiHandler;
 import ccm.burialservices.util.PacketHandler;
-import ccm.burialservices.worldgen.village.GraveyardHandler;
-import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.ModMetadata;
+import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
-import cpw.mods.fml.common.registry.VillagerRegistry;
 
 import java.util.logging.Logger;
 
 import static ccm.burialservices.util.BSConstants.*;
 
 @Mod(modid = MODID, name = MODNAME, dependencies = "required-after:NucleumOmnium")
-@NetworkMod(clientSideRequired = true, serverSideRequired = false, channels = {CHANNEL_SIGN_UPDATE}, packetHandler = PacketHandler.class)
+@NetworkMod(clientSideRequired = true, serverSideRequired = false, channels = {CHANNEL_SIGN_UPDATE, CHANNEL_GRAVE_UPGRADE}, packetHandler = PacketHandler.class)
 public class BurialServices
 {
     @Mod.Instance(MODID)
     public static BurialServices instance;
 
     @Mod.Metadata(MODID)
-    private static ModMetadata metadata;
+    public static ModMetadata metadata;
+
+    @SidedProxy(serverSide = "ccm.burialservices.CommonProxy", clientSide = "ccm.burialservices.client.ClientProxy")
+    public static CommonProxy proxy;
 
     private BSConfig config;
     private Logger   logger;
@@ -71,47 +62,24 @@ public class BurialServices
         return instance.config;
     }
 
-    private static String getVersion()
-    {
-        return metadata.version;
-    }
-
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
         logger = event.getModLog();
         config = new BSConfig(event.getSuggestedConfigurationFile());
-        new ToolBlock(config.toolBlockID);
-        GameRegistry.registerTileEntity(ToolTE.class, "ToolTE");
-        GameRegistry.registerBlock(ToolBlock.getInstance(), "ToolBlock");
-        LanguageRegistry.addName(ToolBlock.getInstance(), "ToolBlock");
 
-        new GraveBlock(config.graveBlockID);
-        GameRegistry.registerTileEntity(GraveTE.class, "GraveTE");
-        GameRegistry.registerBlock(GraveBlock.getInstance(), "GraveBlock");
-        LanguageRegistry.addName(GraveBlock.getInstance(), "Grave");
-
-        if (event.getSide().isClient())
-        {
-            ClientRegistry.bindTileEntitySpecialRenderer(ToolTE.class, new ToolRenderer());
-            ClientRegistry.bindTileEntitySpecialRenderer(GraveTE.class, new GraveRenderer());
-        }
-
-        VillagerRegistry.instance().registerVillageCreationHandler(new GraveyardHandler());
-
-        EventHandler.INSTANCE.init();
-        GuiHandler.INSTANCE.init();
+        proxy.preInit(event);
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event)
     {
-
+        proxy.init(event);
     }
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
-
+        proxy.postInit(event);
     }
 }

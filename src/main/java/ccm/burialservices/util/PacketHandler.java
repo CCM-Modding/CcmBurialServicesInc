@@ -23,9 +23,14 @@
 
 package ccm.burialservices.util;
 
+import ccm.burialservices.client.gui.GraveUpgradeGui;
 import ccm.burialservices.te.ToolTE;
+import ccm.nucleumOmnium.helpers.MiscHelper;
+import ccm.nucleumOmnium.helpers.NetworkHelper;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.Player;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
@@ -33,6 +38,7 @@ import net.minecraft.network.packet.Packet250CustomPayload;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
+import static ccm.burialservices.util.BSConstants.CHANNEL_GRAVE_UPGRADE;
 import static ccm.burialservices.util.BSConstants.CHANNEL_SIGN_UPDATE;
 
 public class PacketHandler implements IPacketHandler
@@ -51,6 +57,20 @@ public class PacketHandler implements IPacketHandler
 
                 stream.close();
                 streambyte.close();
+            }
+            else if (packet.channel.equals(CHANNEL_GRAVE_UPGRADE))
+            {
+                if (FMLCommonHandler.instance().getEffectiveSide().isClient())
+                {
+                    if (Minecraft.getMinecraft().currentScreen instanceof GraveUpgradeGui)
+                    {
+                        ((GraveUpgradeGui) (Minecraft.getMinecraft().currentScreen)).updateInfoFromPacket(NetworkHelper.byteArrayToNBT(packet.data));
+                    }
+                }
+                else
+                {
+                    MiscHelper.setPersistentDataTag((EntityPlayer) player, BSConstants.NBT_PLAYER_GRAVE_DATA, NetworkHelper.byteArrayToNBT(packet.data));
+                }
             }
         }
         catch (Exception e)
