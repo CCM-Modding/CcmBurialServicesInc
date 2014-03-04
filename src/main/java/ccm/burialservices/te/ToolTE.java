@@ -24,7 +24,7 @@
 package ccm.burialservices.te;
 
 import ccm.burialservices.BurialServices;
-import com.google.common.base.Joiner;
+import ccm.burialservices.util.BSConstants;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.relauncher.Side;
@@ -113,9 +113,9 @@ public class ToolTE extends TileEntity
         super.writeToNBT(tag);
         tag.setCompoundTag("stack", getStack().writeToNBT(new NBTTagCompound()));
         tag.setInteger("sign1Facing", sign1Facing);
-        tag.setString("sign1Text", Joiner.on('\n').join(sign1Text));
+        tag.setString("sign1Text", BSConstants.TEXT_JOINER.join(sign1Text));
         tag.setInteger("sign2Facing", sign2Facing);
-        tag.setString("sign2Text", Joiner.on('\n').join(sign2Text));
+        tag.setString("sign2Text", BSConstants.TEXT_JOINER.join(sign2Text));
     }
 
     public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt)
@@ -133,9 +133,9 @@ public class ToolTE extends TileEntity
         NBTTagCompound root = new NBTTagCompound();
         root.setCompoundTag("stack", getStack().writeToNBT(new NBTTagCompound()));
         root.setInteger("sign1Facing", sign1Facing);
-        root.setString("sign1Text", Joiner.on('\n').join(sign1Text));
+        root.setString("sign1Text", BSConstants.TEXT_JOINER.join(sign1Text));
         root.setInteger("sign2Facing", sign2Facing);
-        root.setString("sign2Text", Joiner.on('\n').join(sign2Text));
+        root.setString("sign2Text", BSConstants.TEXT_JOINER.join(sign2Text));
         root.setInteger("lastAdded", lastAdded);
         return new Packet132TileEntityData(xCoord, yCoord, zCoord, 15, root);
     }

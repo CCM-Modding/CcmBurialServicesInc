@@ -25,22 +25,17 @@ package ccm.burialservices.client;
 
 import ccm.burialservices.BurialServices;
 import ccm.burialservices.CommonProxy;
-import ccm.burialservices.client.gui.GraveUpgradeGui;
 import ccm.burialservices.client.renderers.GraveRenderer;
 import ccm.burialservices.client.renderers.ToolRenderer;
 import ccm.burialservices.te.GraveTE;
 import ccm.burialservices.te.ToolTE;
-import ccm.burialservices.util.BSConstants;
-import ccm.nucleumOmnium.helpers.MiscHelper;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.VillagerRegistry;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.EntityInteractEvent;
 
 import static ccm.burialservices.util.BSConstants.MODID;
 
@@ -71,16 +66,5 @@ public class ClientProxy extends CommonProxy
     public void postInit(FMLPostInitializationEvent event)
     {
         super.postInit(event);
-    }
-
-    @Override
-    public void interactEvent(EntityInteractEvent event)
-    {
-        super.interactEvent(event);
-
-        if (Minecraft.getMinecraft().currentScreen instanceof GraveUpgradeGui)
-        {
-            ((GraveUpgradeGui) Minecraft.getMinecraft().currentScreen).updateInfoFromPacket(MiscHelper.getPersistentDataTag(Minecraft.getMinecraft().thePlayer, BSConstants.NBT_PLAYER_GRAVE_DATA));
-        }
     }
 }

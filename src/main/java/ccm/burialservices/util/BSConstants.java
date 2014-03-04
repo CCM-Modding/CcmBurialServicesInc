@@ -23,6 +23,8 @@
 
 package ccm.burialservices.util;
 
+import com.google.common.base.Joiner;
+
 public class BSConstants
 {
     public static final String MODID   = "BurialServices";
@@ -32,4 +34,6 @@ public class BSConstants
     public static final String CHANNEL_GRAVE_UPGRADE = MODID + "U";
 
     public static final String NBT_PLAYER_GRAVE_DATA = "GraveData";
+
+    public static final Joiner TEXT_JOINER = Joiner.on('\n');
 }

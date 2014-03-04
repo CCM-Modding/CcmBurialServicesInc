@@ -24,9 +24,11 @@
 package ccm.burialservices.client.renderers;
 
 import ccm.burialservices.te.GraveTE;
+import com.google.common.base.Strings;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Tessellator;
@@ -40,6 +42,9 @@ import net.minecraft.util.Icon;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+
+import static ccm.burialservices.client.renderers.ToolRenderer.MODEL_SIGN;
+import static ccm.burialservices.client.renderers.ToolRenderer.SIGN_TEXTURE;
 
 @SideOnly(Side.CLIENT)
 public class GraveRenderer extends TileEntitySpecialRenderer
@@ -114,6 +119,77 @@ public class GraveRenderer extends TileEntitySpecialRenderer
                 }
             }
         }
+
+        renderSign(x, y, z, tickTime, te.text, te.getBlockMetadata(), is != null);
+    }
+
+    private void renderSign(double x, double y, double z, float tickTime, String[] signText, int meta, boolean renderingItem)
+    {
+        if (signText.length == 0) return;
+        int i = 0;
+        for (String line : signText) if (!Strings.isNullOrEmpty(line)) {i++;}
+        if (signText.length != i) return;
+
+        GL11.glPushMatrix();
+        float f1 = 0.6666667F;
+        GL11.glTranslatef((float) x + 0.5F, (float) y + 0.75F * f1, (float) z + 0.5F);
+        float f2 = 0.0F;
+
+        switch (meta)
+        {
+            case 0:
+                break;
+            case 1:
+                f2 = 90f;
+                break;
+            case 2:
+                f2 = 180f;
+                break;
+            case 3:
+                f2 = -90f;
+
+        }
+        GL11.glTranslated(0, -0.3, 0);
+        if (renderingItem) GL11.glTranslated(0, 0.03, 0);
+
+        GL11.glRotatef(f2, 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef(-90F, 1.0F, 0.0F, 0.0F);
+        GL11.glTranslated(0, -1.2, 0);
+
+        GL11.glTranslatef(0.0F, -0.3125F, -0.4375F);
+        GL11.glTranslatef(0f, 0.8F, 0.5f);
+        MODEL_SIGN.signStick.showModel = false;
+
+        this.bindTexture(SIGN_TEXTURE);
+        GL11.glPushMatrix();
+        GL11.glScalef(f1, -f1, -f1);
+        MODEL_SIGN.renderSign();
+        GL11.glPopMatrix();
+        FontRenderer fontrenderer = this.getFontRenderer();
+        f2 = 0.016666668F * f1;
+        GL11.glTranslatef(0.0F, 0.5F * f1, 0.07F * f1);
+        GL11.glScalef(f2, -f2, f2);
+        GL11.glNormal3f(0.0F, 0.0F, -1.0F * f2);
+        GL11.glDepthMask(false);
+        byte b0 = 0;
+
+        for (int j = 0; j < signText.length; ++j)
+        {
+            GL11.glPushMatrix();
+            String s = signText[signText.length - j - 1];
+            int width = fontrenderer.getStringWidth(s);
+            if (width > 95)
+            {
+                float f = 1f - ((width) * 0.0015f);
+                GL11.glScalef(f, f, f);
+            }
+            fontrenderer.drawString(s, -width / 2, j * 10 - signText.length * 5, b0);
+            GL11.glPopMatrix();
+        }
+
+        GL11.glDepthMask(true);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GL11.glPopMatrix();
     }
 
     private static void renderItemHolding(int i, int meta, ItemStack stack, double x, double y, double z, float tickTime)

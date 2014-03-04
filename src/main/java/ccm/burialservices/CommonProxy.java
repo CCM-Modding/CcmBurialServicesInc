@@ -37,7 +37,6 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.VillagerRegistry;
-import net.minecraftforge.event.entity.player.EntityInteractEvent;
 
 public class CommonProxy
 {
@@ -67,11 +66,6 @@ public class CommonProxy
     }
 
     public void postInit(FMLPostInitializationEvent event)
-    {
-
-    }
-
-    public void interactEvent(EntityInteractEvent event)
     {
 
     }

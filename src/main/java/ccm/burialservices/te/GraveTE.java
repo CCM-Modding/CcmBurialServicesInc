@@ -23,6 +23,8 @@
 
 package ccm.burialservices.te;
 
+import ccm.burialservices.util.BSConstants;
+import ccm.nucleumOmnium.helpers.MiscHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -48,6 +50,7 @@ public class GraveTE extends TileEntity
     private ItemStack[] contents = new ItemStack[0];
     private String      username = "";
     private ResourceLocation skin;
+    public  String[]         text;
 
     public GraveTE()
     {
@@ -75,6 +78,7 @@ public class GraveTE extends TileEntity
         }
         username = tag.getString("username");
         holding = ItemStack.loadItemStackFromNBT(tag.getCompoundTag("holding"));
+        text = tag.getString("text").split("\n");
     }
 
     public void writeToNBT(NBTTagCompound tag)
@@ -89,6 +93,7 @@ public class GraveTE extends TileEntity
         tag.setTag("contents", nbttaglist);
         tag.setString("username", username);
         tag.setCompoundTag("holding", holding == null ? new NBTTagCompound() : holding.writeToNBT(new NBTTagCompound()));
+        tag.setString("text", BSConstants.TEXT_JOINER.join(text));
     }
 
     public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt)
@@ -101,6 +106,7 @@ public class GraveTE extends TileEntity
         }
         username = pkt.data.getString("username");
         holding = ItemStack.loadItemStackFromNBT(pkt.data.getCompoundTag("holding"));
+        text = pkt.data.getString("text").split("\n");
     }
 
     public Packet getDescriptionPacket()
@@ -115,6 +121,7 @@ public class GraveTE extends TileEntity
         root.setTag("contents", nbttaglist);
         root.setString("username", username);
         root.setCompoundTag("holding", holding == null ? new NBTTagCompound() : holding.writeToNBT(new NBTTagCompound()));
+        root.setString("text", BSConstants.TEXT_JOINER.join(text));
 
         return new Packet132TileEntityData(xCoord, yCoord, zCoord, 15, root);
     }
@@ -122,6 +129,7 @@ public class GraveTE extends TileEntity
     public void placeBlock(EntityLivingBase entityLiving, ItemStack stack)
     {
         username = entityLiving.getEntityName();
+        if (entityLiving instanceof EntityPlayer) applyPlayerProperties((EntityPlayer) entityLiving);
     }
 
     public static boolean willHold(ItemStack itemStack)
@@ -137,9 +145,16 @@ public class GraveTE extends TileEntity
         return false;
     }
 
-    public void fillFromDeath(EntityPlayer entityPlayer, ArrayList<EntityItem> drops)
+    public void applyPlayerProperties(EntityPlayer entityPlayer)
     {
         username = entityPlayer.username;
+        NBTTagCompound data = MiscHelper.getPersistentDataTag(entityPlayer, BSConstants.NBT_PLAYER_GRAVE_DATA);
+        text = data.getString("text").split("\n");
+    }
+
+    public void fillFromDeath(EntityPlayer entityPlayer, ArrayList<EntityItem> drops)
+    {
+        applyPlayerProperties(entityPlayer);
 
         int i = 0;
         holding = entityPlayer.getHeldItem();

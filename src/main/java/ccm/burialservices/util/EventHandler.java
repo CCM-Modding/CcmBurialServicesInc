@@ -35,6 +35,7 @@ import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.item.*;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.MinecraftForge;
@@ -75,13 +76,12 @@ public class EventHandler
     {
         if (event.target instanceof EntityVillager && ((EntityVillager) event.target).getProfession() == BurialServices.getConfig().villagerID)
         {
-            if (FMLCommonHandler.instance().getEffectiveSide().isServer())
+            if (FMLCommonHandler.instance().getSide().isServer())
             {
                 PacketDispatcher.sendPacketToPlayer(NetworkHelper.makeNBTPacket(BSConstants.CHANNEL_GRAVE_UPGRADE, MiscHelper.getPersistentDataTag(event.entityPlayer, BSConstants.NBT_PLAYER_GRAVE_DATA)), (Player) event.entityPlayer);
-                event.setCanceled(true);
             }
+            event.setCanceled(MinecraftServer.getServer().isSinglePlayer());
             FMLNetworkHandler.openGui(event.entityPlayer, BurialServices.instance, GuiHandler.undertakerID, event.entityPlayer.worldObj, 0, 0, 0);
-            BurialServices.proxy.interactEvent(event);
         }
     }
 

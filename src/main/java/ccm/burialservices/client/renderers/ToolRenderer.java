@@ -44,9 +44,9 @@ import org.lwjgl.opengl.GL12;
 @SideOnly(Side.CLIENT)
 public class ToolRenderer extends TileEntitySpecialRenderer
 {
-    private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
-    private static final ResourceLocation SIGNTEXTURE    = new ResourceLocation("textures/entity/sign.png");
-    private final        ModelSign        modelSign      = new ModelSign();
+    public static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
+    public static final ResourceLocation SIGN_TEXTURE   = new ResourceLocation("textures/entity/sign.png");
+    public static final ModelSign        MODEL_SIGN     = new ModelSign();
 
     @Override
     public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float tickTime)
@@ -107,7 +107,7 @@ public class ToolRenderer extends TileEntitySpecialRenderer
 
         GL11.glTranslatef(0.0F, -0.3125F, -0.4375F);
         GL11.glTranslatef(0f, 0.8F, 0.5f);
-        this.modelSign.signStick.showModel = false;
+        this.MODEL_SIGN.signStick.showModel = false;
 
         if (facing > 4)
         {
@@ -120,10 +120,10 @@ public class ToolRenderer extends TileEntitySpecialRenderer
             else if (meta == 5 && facing == 5) GL11.glTranslated(1.2, 0, 0);
         }
 
-        this.bindTexture(SIGNTEXTURE);
+        this.bindTexture(SIGN_TEXTURE);
         GL11.glPushMatrix();
         GL11.glScalef(f1, -f1, -f1);
-        this.modelSign.renderSign();
+        this.MODEL_SIGN.renderSign();
         GL11.glPopMatrix();
         FontRenderer fontrenderer = this.getFontRenderer();
         f2 = 0.016666668F * f1;
