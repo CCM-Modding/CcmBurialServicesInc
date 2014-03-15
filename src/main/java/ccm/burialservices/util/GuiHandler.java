@@ -25,8 +25,6 @@ package ccm.burialservices.util;
 
 import ccm.burialservices.BurialServices;
 import ccm.burialservices.client.gui.GraveUpgradeGui;
-import ccm.burialservices.client.gui.SwordSignGui;
-import ccm.burialservices.te.ToolTE;
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import net.minecraft.entity.player.EntityPlayer;
@@ -61,8 +59,6 @@ public class GuiHandler implements IGuiHandler
     {
         switch (ID)
         {
-            case swordSign:
-                return new SwordSignGui((ToolTE) world.getBlockTileEntity(x, y, z));
             case graveUpgradeID:
                 return new GraveUpgradeGui(false);
             case undertakerID:

@@ -30,11 +30,11 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.tileentity.TileEntity;
@@ -43,18 +43,16 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import static ccm.burialservices.client.renderers.ToolRenderer.MODEL_SIGN;
-import static ccm.burialservices.client.renderers.ToolRenderer.SIGN_TEXTURE;
-
 @SideOnly(Side.CLIENT)
 public class GraveRenderer extends TileEntitySpecialRenderer
 {
-    private final ModelBiped modelBiped = new ModelBiped();
-    ItemStack demo = new ItemStack(Item.pickaxeDiamond);
+    public static final ResourceLocation SIGN_TEXTURE = new ResourceLocation("textures/entity/sign.png");
+    public static final ModelSign        MODEL_SIGN   = new ModelSign();
+    public static final ModelBiped       MODEL_BIPED  = new ModelBiped();
 
     public GraveRenderer()
     {
-        modelBiped.isChild = false;
+        MODEL_BIPED.isChild = false;
     }
 
     @Override
@@ -97,13 +95,13 @@ public class GraveRenderer extends TileEntitySpecialRenderer
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glRotatef(90F, 1.0F, 0.0F, 0.0F);
 
-        modelBiped.bipedHead.rotateAngleX = (float) Math.toRadians(15F);
-        modelBiped.bipedHead.render(f5);
-        modelBiped.bipedBody.render(f5);
-        modelBiped.bipedRightArm.render(f5);
-        modelBiped.bipedLeftArm.render(f5);
-        modelBiped.bipedRightLeg.render(f5);
-        modelBiped.bipedLeftLeg.render(f5);
+        MODEL_BIPED.bipedHead.rotateAngleX = (float) Math.toRadians(15F);
+        MODEL_BIPED.bipedHead.render(f5);
+        MODEL_BIPED.bipedBody.render(f5);
+        MODEL_BIPED.bipedRightArm.render(f5);
+        MODEL_BIPED.bipedLeftArm.render(f5);
+        MODEL_BIPED.bipedRightLeg.render(f5);
+        MODEL_BIPED.bipedLeftLeg.render(f5);
 
         GL11.glPopMatrix();
 

@@ -9,8 +9,8 @@
   "updateUrl": "",
   "authors": ["Dries007"],
   "credits": "Claycorp for comping up with this spielerei.",
-  "logoFile": "",
+  "logoFile": "BurialServices.png",
   "screenshots": [],
-  "dependencies": ["after:NucleumOmnium"]
+  "dependencies": ["required-after:NucleumOmnium;required-after:PlaceableTools"]
 }
 ]

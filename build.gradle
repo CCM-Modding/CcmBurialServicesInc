@@ -9,12 +9,19 @@ buildscript {
 
 apply plugin: "gmcp"
 
-ext.env = System.getenv()
-version = new File('version.txt').text + env.BUILD_NUMBER
+version = "v1.0.0"
 
 archivesBaseName = 'CcmBurialServices'
 minecraft {
 	minecraftVersion = "1.6.4"
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'NO/src/main/java', 'PlaceableTools/src/main/java'
+        }
+    }
 }
 
 processResources

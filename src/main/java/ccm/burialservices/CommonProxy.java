@@ -24,9 +24,7 @@
 package ccm.burialservices;
 
 import ccm.burialservices.block.GraveBlock;
-import ccm.burialservices.block.ToolBlock;
 import ccm.burialservices.te.GraveTE;
-import ccm.burialservices.te.ToolTE;
 import ccm.burialservices.util.EventHandler;
 import ccm.burialservices.util.GuiHandler;
 import ccm.burialservices.util.VillageTradeHandler;
@@ -42,11 +40,6 @@ public class CommonProxy
 {
     public void preInit(FMLPreInitializationEvent event)
     {
-        new ToolBlock(BurialServices.getConfig().toolBlockID);
-        GameRegistry.registerTileEntity(ToolTE.class, "ToolTE");
-        GameRegistry.registerBlock(ToolBlock.getInstance(), "ToolBlock");
-        LanguageRegistry.addName(ToolBlock.getInstance(), "ToolBlock");
-
         new GraveBlock(BurialServices.getConfig().graveBlockID);
         GameRegistry.registerTileEntity(GraveTE.class, "GraveTE");
         GameRegistry.registerBlock(GraveBlock.getInstance(), "GraveBlock");

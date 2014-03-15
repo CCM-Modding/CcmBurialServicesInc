@@ -26,9 +26,7 @@ package ccm.burialservices.client;
 import ccm.burialservices.BurialServices;
 import ccm.burialservices.CommonProxy;
 import ccm.burialservices.client.renderers.GraveRenderer;
-import ccm.burialservices.client.renderers.ToolRenderer;
 import ccm.burialservices.te.GraveTE;
-import ccm.burialservices.te.ToolTE;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -51,7 +49,6 @@ public class ClientProxy extends CommonProxy
     {
         super.preInit(event);
 
-        ClientRegistry.bindTileEntitySpecialRenderer(ToolTE.class, new ToolRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(GraveTE.class, new GraveRenderer());
         VillagerRegistry.instance().registerVillagerSkin(BurialServices.getConfig().villagerID, new ResourceLocation(MODID.toLowerCase(), "textures/entity/villagerUndertaker.png"));
     }

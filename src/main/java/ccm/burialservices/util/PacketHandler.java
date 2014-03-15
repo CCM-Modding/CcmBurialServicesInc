@@ -24,7 +24,6 @@
 package ccm.burialservices.util;
 
 import ccm.burialservices.client.gui.GraveUpgradeGui;
-import ccm.burialservices.te.ToolTE;
 import ccm.nucleumOmnium.helpers.MiscHelper;
 import ccm.nucleumOmnium.helpers.NetworkHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -35,11 +34,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-
 import static ccm.burialservices.util.BSConstants.CHANNEL_GRAVE_UPGRADE;
-import static ccm.burialservices.util.BSConstants.CHANNEL_SIGN_UPDATE;
 
 public class PacketHandler implements IPacketHandler
 {
@@ -48,17 +43,7 @@ public class PacketHandler implements IPacketHandler
     {
         try
         {
-            if (packet.channel.equals(CHANNEL_SIGN_UPDATE))
-            {
-                ByteArrayInputStream streambyte = new ByteArrayInputStream(packet.data);
-                DataInputStream stream = new DataInputStream(streambyte);
-
-                ((ToolTE) ((EntityPlayer) player).worldObj.getBlockTileEntity(stream.readInt(), stream.readInt(), stream.readInt())).setText(stream.readBoolean(), new String[] {stream.readUTF(), stream.readUTF(), stream.readUTF(), stream.readUTF()});
-
-                stream.close();
-                streambyte.close();
-            }
-            else if (packet.channel.equals(CHANNEL_GRAVE_UPGRADE))
+            if (packet.channel.equals(CHANNEL_GRAVE_UPGRADE))
             {
                 if (FMLCommonHandler.instance().getEffectiveSide().isClient())
                 {

@@ -24,9 +24,9 @@
 package ccm.burialservices.worldgen.village;
 
 import ccm.burialservices.BurialServices;
-import ccm.burialservices.block.ToolBlock;
-import ccm.burialservices.te.ToolTE;
 import ccm.nucleumOmnium.helpers.MiscHelper;
+import ccm.placeableTools.block.ToolBlock;
+import ccm.placeableTools.block.ToolTE;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.MathHelper;
@@ -140,7 +140,7 @@ public class GraveyardComponent extends ComponentVillage
                 int i = this.getXWithOffset(x, z);
                 int k = this.getZWithOffset(x, z);
                 ToolBlock.placeOther(world, i, j, k, MiscHelper.getRandomFromSet(random, Item.swordWood, Item.swordStone, Item.swordGold), getMetaBaseOnRotation());
-                ((ToolTE) world.getBlockTileEntity(i, j, k)).addSign(getFacingBaseOnRotation(false), lines);
+                addSign(((ToolTE) world.getBlockTileEntity(i, j, k)), getFacingBaseOnRotation(false), lines);
             }
             for (int z = 2; z < 9; z += 2)
                 this.placeBlockAtCurrentPosition(world, Block.flowerPot.blockID, MathHelper.getRandomIntegerInRange(random, 1, 12), x, 1, z, sbb);
@@ -152,7 +152,7 @@ public class GraveyardComponent extends ComponentVillage
                 int i = this.getXWithOffset(x, 5 + z * 2);
                 int k = this.getZWithOffset(x, 5 + z * 2);
                 ToolBlock.placeOther(world, i, j, k, Item.swordWood, getMetaBaseOnRotation());
-                ((ToolTE) world.getBlockTileEntity(i, j, k)).addSign(getFacingBaseOnRotation(true), lines);
+                addSign(((ToolTE) world.getBlockTileEntity(i, j, k)), getFacingBaseOnRotation(true), lines);
 
                 this.placeBlockAtCurrentPosition(world, Block.tilledField.blockID, 1, x - 2, 0, 5 + z * 2, sbb);
                 this.placeBlockAtCurrentPosition(world, Block.tilledField.blockID, 1, x - 1, 0, 5 + z * 2, sbb);
@@ -166,6 +166,30 @@ public class GraveyardComponent extends ComponentVillage
 
         this.spawnVillagers(world, sbb, 5, 1, 5, 1);
         return true;
+    }
+
+    private void addSign(ToolTE blockTileEntity, int coordBaseMode, ArrayList<Integer>[] lines)
+    {
+        int sign = blockTileEntity.addSign(coordBaseMode);
+        if (sign == -1) return;
+        String[][] RIPText = BurialServices.getConfig().RIPText;
+        for (int i = 0; i < 4; i++)
+        {
+            String[] configText = RIPText[i];
+            ArrayList<Integer> line = lines[i];
+            boolean done = false;
+            while (!done)
+            {
+                if (line.size() == configText.length) line.clear();
+                int rnd = blockTileEntity.worldObj.rand.nextInt(configText.length);
+                if (!line.contains(rnd))
+                {
+                    done = true;
+                    if (sign == 1) blockTileEntity.sign1Text[i] = configText[rnd];
+                    else if (sign == 2) blockTileEntity.sign2Text[i] = configText[rnd];
+                }
+            }
+        }
     }
 
     protected int getVillagerType(int par1)

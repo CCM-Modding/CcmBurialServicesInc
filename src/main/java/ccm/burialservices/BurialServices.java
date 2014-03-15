@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 
 import static ccm.burialservices.util.BSConstants.*;
 
-@Mod(modid = MODID, name = MODNAME, dependencies = "required-after:NucleumOmnium")
+@Mod(modid = MODID, name = MODNAME, dependencies = "required-after:NucleumOmnium;required-after:PlaceableTools")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false, channels = {CHANNEL_SIGN_UPDATE, CHANNEL_GRAVE_UPGRADE}, packetHandler = PacketHandler.class)
 public class BurialServices
 {
