@@ -20,6 +20,10 @@ sourceSets {
     main {
         java {
             srcDir 'NO/src/main/java'
+        }
+    }
+    main {
+        java {
             srcDir 'PlaceableTools/src/main/java'
         }
     }
