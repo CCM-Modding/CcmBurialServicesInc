@@ -1,36 +1,48 @@
 buildscript {
     repositories {
+        maven { url = "http://maven.dries007.net/content/repositories/ccm/" }
+        maven { url = "http://files.minecraftforge.net/maven/" }
+        maven { url = "https://libraries.minecraft.net/" }
         mavenCentral()
     }
+    
     dependencies {
 		classpath 'com.github.abrarsyed.gmcp:GMCP:latest.integration'
     }
 }
+configurations {
+    compile
+    deployJars
+}
+repositories {
+    maven { url = "http://maven.dries007.net/content/repositories/ccm/" }
+    maven { url = "http://files.minecraftforge.net/maven/" }
+    maven { url = "https://libraries.minecraft.net/" }
+}
 
 apply plugin: "gmcp"
+apply plugin: "maven"
 
-version = "v1.0.0"
+group = "ccm.burialservices"
+version = "1.0.0"
 
-archivesBaseName = 'CcmBurialServices'
+targetCompatibility = 1.6
+sourceCompatibility = 1.6
+
+archivesBaseName = 'CcmBurialServicesInc'
 minecraft {
 	minecraftVersion = "1.6.4"
 }
 
-sourceSets {
-    main {
-        java {
-            srcDir 'NO/src/main/java'
-        }
-    }
-    main {
-        java {
-            srcDir 'PlaceableTools/src/main/java'
-        }
-    }
+ext.BUILD_NUMBER = System.getenv().BUILD_NUMBER;
+if (ext.BUILD_NUMBER == null) ext.BUILD_NUMBER = "0"
+version = project.minecraft.minecraftVersion + "-" + version + "." + ext.BUILD_NUMBER
+
+dependencies {
+    compile("ccm.placeableTools:PlaceableTools:" + project.minecraft.minecraftVersion + "-1.+:dev")
 }
 
-processResources
-{
+processResources {
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.info'
         expand 'version':project.version, 'mcversion':project.minecraft.minecraftVersion
@@ -40,12 +52,72 @@ processResources
         exclude '**/*.info'
     }
 }
-// because the normal default jar task has been modified to be obfuscated
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'dev-src'
+}
+
 task deobfJar(type: Jar) {
-	from sourceSets.main.output
-	appendix = 'dev'
+    from sourceSets.main.output
+	classifier = 'dev'
 }
 
 artifacts {
-	archives deobfJar
+	archives jar
+    archives sourcesJar
+    archives deobfJar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: mavenUrl) {
+                authentication(userName: mavenUser, password: mavenPassword)
+            }
+            pom {
+                groupId = project.group
+                version = project.version
+                artifactId = project.archivesBaseName
+                project {
+                    name project.archivesBaseName
+                    packaging 'jar'
+                    description 'Adds the ability to place tools in the world!'
+                    url 'https://github.com/CCM-Modding/CcmBurialServicesInc'
+
+                    scm {
+                        url 'https://github.com/CCM-Modding/CcmBurialServicesInc'
+                        connection 'scm:git:git://github.com/CCM-Modding/CcmBurialServicesInc.git'
+                        developerConnection 'scm:git:git@github.com:CCM-Modding/CcmBurialServicesInc.git'
+                    }
+
+                    issueManagement {
+                        system 'github'
+                        url 'https://github.com/CCM-Modding/CcmBurialServicesInc/issues'
+                    }
+
+                    licenses  {
+                        license  {
+                            name 'MIT License'
+                            url 'https://raw.github.com/CCM-Modding/CcmBurialServicesInc/master/LICENCE'
+                            distribution 'repo'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'Dries007'
+                            name 'Dries007'
+                            roles { role 'developer' }
+                        }
+                        developer {
+                            id 'Claycorp'
+                            name 'Claycorp'
+                            roles { role 'architect' }
+                        }
+                    }
+                }
+           }
+       }
+    }
 }

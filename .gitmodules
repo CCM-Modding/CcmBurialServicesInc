@@ -1,7 +1,0 @@
-[submodule "NO"]
-	path = NO
-	url = git://github.com/CCM-Modding/Nucleum-Omnium.git
-	branch = theRealWork
-[submodule "PlaceableTools"]
-	path = PlaceableTools
-	url = https://github.com/CCM-Modding/PlaceableTools.git

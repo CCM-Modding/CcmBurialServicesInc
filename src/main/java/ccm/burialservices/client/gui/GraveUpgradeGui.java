@@ -55,7 +55,7 @@ public class GraveUpgradeGui extends GuiScreen
     private      NBTTagCompound data;
     private GuiTextField[] textFields = new GuiTextField[4];
     private int mode;
-    private ArrayList<GuiButton> optionButtons = new ArrayList<>();
+    private ArrayList<GuiButton> optionButtons = new ArrayList<GuiButton>();
     private GuiButton editTextApplyButton;
 
     public GraveUpgradeGui(boolean isUndertaker)
