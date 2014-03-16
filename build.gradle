@@ -82,7 +82,7 @@ uploadArchives {
                 project {
                     name project.archivesBaseName
                     packaging 'jar'
-                    description 'Adds the ability to place tools in the world!'
+                    description 'Adds upgradable graves to MC.'
                     url 'https://github.com/CCM-Modding/CcmBurialServicesInc'
 
                     scm {
