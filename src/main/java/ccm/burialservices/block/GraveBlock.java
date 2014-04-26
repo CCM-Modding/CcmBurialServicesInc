@@ -31,15 +31,12 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-
-import java.util.ArrayList;
 
 public class GraveBlock extends BlockContainer
 {
@@ -120,19 +117,6 @@ public class GraveBlock extends BlockContainer
         return ((GraveTE) world.getBlockTileEntity(x, y, z)).onActivated(player, side);
     }
 
-    public static boolean place(World world, EntityPlayer entityPlayer, ArrayList<EntityItem> drops)
-    {
-        int x = (int) entityPlayer.posX;
-        int y = (int) entityPlayer.posY;
-        int z = (int) entityPlayer.posZ;
-
-        world.setBlock(x, y, z, GraveBlock.getInstance().blockID, world.rand.nextInt(4), 3);
-
-        ((GraveTE) world.getBlockTileEntity(x, y, z)).fillFromDeath(entityPlayer, drops);
-
-        return true;
-    }
-
     @SideOnly(Side.CLIENT)
     public boolean addBlockDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer effectRenderer)
     {
@@ -144,4 +128,6 @@ public class GraveBlock extends BlockContainer
     {
         return true;
     }
+
+
 }

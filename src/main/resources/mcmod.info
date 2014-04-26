@@ -1,16 +1,22 @@
-[
 {
-  "modid": "BurialServices",
-  "name": "CcmBurialServicesInc",
-  "description": "Adds an advanced grave system",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "https://github.com/CCM-Modding/CcmBurialServicesInc",
-  "updateUrl": "",
-  "authors": ["Dries007"],
-  "credits": "Claycorp for comping up with this spielerei.",
-  "logoFile": "BurialServices.png",
-  "screenshots": [],
-  "dependencies": ["required-after:NucleumOmnium;required-after:PlaceableTools"]
+  "modinfoversion": 2,
+  "modlist": [{
+    "modid": "BurialServices",
+    "name": "CcmBurialServicesInc",
+    "description": "Go make that factory!",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://github.com/CCM-Modding/CcmBurialServicesInc",
+    "authors": [ "Dries007" ],
+    "credits": "Claycorp for idea, BC for code example.",
+    "logoFile": "BurialServices.png",
+    "requiredMods": [
+        "Forge",
+        "PlaceableTools" 
+    ],
+    "dependencies": [ 
+        "PlaceableTools@[${placeableToolsVersion},)"
+    ],
+    "useDependencyInformation": "true"
+  }]
 }
-]

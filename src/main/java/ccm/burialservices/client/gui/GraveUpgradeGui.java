@@ -92,7 +92,8 @@ public class GraveUpgradeGui extends GuiScreen
         this.buttonList.clear();
         Keyboard.enableRepeatEvents(true);
         optionButtons.add(new GuiButton(ID_DONE, this.width / 2 - 100, this.height / 2 + 100, "Done"));
-        optionButtons.add(new GuiButton(ID_OPTIONS_EDITTEXT, this.width / 2 - 150, 25, 100, 20, "Edit grave text"));
+        optionButtons.add(new GuiButton(ID_OPTIONS_EDITTEXT, this.width / 2 - 150, 75, 100, 20, "Edit grave text"));
+
         editTextApplyButton = new GuiButton(ID_EDITTEXT_APPLY, this.width / 2 - 50, this.height / 2 + 55, 100, 20, "Apply");
 
         for (int i = 0; i < 4; i++)
@@ -190,10 +191,10 @@ public class GraveUpgradeGui extends GuiScreen
         switch (mode)
         {
             case ID_DONE:
-                this.drawCenteredString(this.fontRenderer, isUndertaker ? undertakerTitle : graveTitle, this.width / 2, 10, 16777215);
+                this.drawCenteredString(this.fontRenderer, isUndertaker ? undertakerTitle : graveTitle, this.width / 2, 50, 16777215);
                 break;
             case ID_OPTIONS_EDITTEXT:
-                this.drawCenteredString(this.fontRenderer, "Edit the text on your grave:", this.width / 2, 10, 16777215);
+                this.drawCenteredString(this.fontRenderer, "Edit the text on your grave:", this.width / 2, this.height / 2 - 75, 16777215);
                 for (int i = 0; i < 4; i++) textFields[i].drawTextBox();
                 break;
         }

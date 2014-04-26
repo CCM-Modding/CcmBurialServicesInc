@@ -23,13 +23,13 @@
 
 package ccm.burialservices.te;
 
+import ccm.burialservices.BurialServices;
 import ccm.burialservices.util.BSConstants;
 import ccm.nucleumOmnium.helpers.MiscHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NBTTagCompound;
@@ -42,8 +42,6 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-
 public class GraveTE extends TileEntity
 {
     private ItemStack   holding  = null;
@@ -51,6 +49,7 @@ public class GraveTE extends TileEntity
     private String      username = "";
     private ResourceLocation skin;
     public  String[]         text;
+    private int         age = 0;
 
     public GraveTE()
     {
@@ -79,6 +78,7 @@ public class GraveTE extends TileEntity
         username = tag.getString("username");
         holding = ItemStack.loadItemStackFromNBT(tag.getCompoundTag("holding"));
         text = tag.getString("text").split("\n");
+        age = tag.getInteger("age");
     }
 
     public void writeToNBT(NBTTagCompound tag)
@@ -94,6 +94,7 @@ public class GraveTE extends TileEntity
         tag.setString("username", username);
         tag.setCompoundTag("holding", holding == null ? new NBTTagCompound() : holding.writeToNBT(new NBTTagCompound()));
         tag.setString("text", BSConstants.TEXT_JOINER.join(text));
+        tag.setInteger("age", age);
     }
 
     public void onDataPacket(INetworkManager net, Packet132TileEntityData pkt)
@@ -107,6 +108,7 @@ public class GraveTE extends TileEntity
         username = pkt.data.getString("username");
         holding = ItemStack.loadItemStackFromNBT(pkt.data.getCompoundTag("holding"));
         text = pkt.data.getString("text").split("\n");
+        age = pkt.data.getInteger("age");
     }
 
     public Packet getDescriptionPacket()
@@ -122,6 +124,7 @@ public class GraveTE extends TileEntity
         root.setString("username", username);
         root.setCompoundTag("holding", holding == null ? new NBTTagCompound() : holding.writeToNBT(new NBTTagCompound()));
         root.setString("text", BSConstants.TEXT_JOINER.join(text));
+        root.setInteger("age", age);
 
         return new Packet132TileEntityData(xCoord, yCoord, zCoord, 15, root);
     }
@@ -150,26 +153,32 @@ public class GraveTE extends TileEntity
         username = entityPlayer.username;
         NBTTagCompound data = MiscHelper.getPersistentDataTag(entityPlayer, BSConstants.NBT_PLAYER_GRAVE_DATA);
         text = data.getString("text").split("\n");
+        boolean empty = true;
+        for (String temp : text) if (!temp.isEmpty()) empty = false;
+        if (empty)
+        {
+            text = new String[] {"", "Here lies", username, ""};
+        }
     }
 
-    public void fillFromDeath(EntityPlayer entityPlayer, ArrayList<EntityItem> drops)
+    public void setHolding(ItemStack holding)
     {
-        applyPlayerProperties(entityPlayer);
+        this.holding = holding;
+    }
 
-        int i = 0;
-        holding = entityPlayer.getHeldItem();
-        while (!GraveTE.willHold(holding))
-        {
-            if (i == drops.size()) break;
-            holding = drops.get(i++).getEntityItem();
-        }
-        if (!GraveTE.willHold(holding)) holding = null;
+    public ItemStack[] getContents()
+    {
+        return contents;
+    }
 
-        contents = new ItemStack[drops.size()];
-        for (i = 0; i < drops.size(); i++)
-        {
-            contents[i] = drops.get(i).getEntityItem();
-        }
+    public void setContents(ItemStack[] contents)
+    {
+        this.contents = contents;
+    }
+
+    public String getUsername()
+    {
+        return username;
     }
 
     public ResourceLocation getLocationSkin()
@@ -184,36 +193,20 @@ public class GraveTE extends TileEntity
         super.invalidate();
 
         if (worldObj.isRemote) return;
+
         for (ItemStack itemStack : contents)
         {
-            if (itemStack != null)
-            {
-                float f = worldObj.rand.nextFloat() * 0.8F + 0.1F;
-                float f1 = worldObj.rand.nextFloat() * 0.8F + 0.1F;
-                EntityItem entityitem;
+            MiscHelper.dropItems(worldObj, itemStack, xCoord, yCoord, zCoord);
+        }
 
-                for (float f2 = worldObj.rand.nextFloat() * 0.8F + 0.1F; itemStack.stackSize > 0; worldObj.spawnEntityInWorld(entityitem))
-                {
-                    int k1 = worldObj.rand.nextInt(21) + 10;
+        if (BurialServices.getConfig().giveSkull)
+        {
+            ItemStack skull = new ItemStack(Item.skull, 1, 3);
+            NBTTagCompound tagCompound = new NBTTagCompound();
+            tagCompound.setString("SkullOwner", username);
+            skull.setTagCompound(tagCompound);
 
-                    if (k1 > itemStack.stackSize)
-                    {
-                        k1 = itemStack.stackSize;
-                    }
-
-                    itemStack.stackSize -= k1;
-                    entityitem = new EntityItem(worldObj, (double) ((float) xCoord + f), (double) ((float) yCoord + f1), (double) ((float) zCoord + f2), new ItemStack(itemStack.itemID, k1, itemStack.getItemDamage()));
-                    float f3 = 0.05F;
-                    entityitem.motionX = (double) ((float) worldObj.rand.nextGaussian() * f3);
-                    entityitem.motionY = (double) ((float) worldObj.rand.nextGaussian() * f3 + 0.2F);
-                    entityitem.motionZ = (double) ((float) worldObj.rand.nextGaussian() * f3);
-
-                    if (itemStack.hasTagCompound())
-                    {
-                        entityitem.getEntityItem().setTagCompound((NBTTagCompound) itemStack.getTagCompound().copy());
-                    }
-                }
-            }
+            MiscHelper.dropItems(worldObj, skull, xCoord, yCoord, zCoord);
         }
     }
 

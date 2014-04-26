@@ -24,6 +24,7 @@
 package ccm.burialservices.util;
 
 import ccm.burialservices.BurialServices;
+import ccm.burialservices.GraveHandler;
 import ccm.burialservices.block.GraveBlock;
 import ccm.nucleumOmnium.helpers.MiscHelper;
 import ccm.nucleumOmnium.helpers.NetworkHelper;
@@ -60,7 +61,7 @@ public class EventHandler
     {
         World world = event.entityPlayer.getEntityWorld();
         if (world.isRemote) return;
-        event.setCanceled(GraveBlock.place(event.entityPlayer.worldObj, event.entityPlayer, event.drops));
+        event.setCanceled(GraveHandler.onDeath(event.entityPlayer.worldObj, event.entityPlayer, event.drops));
     }
 
     /**

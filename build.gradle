@@ -10,10 +10,12 @@ buildscript {
 		classpath 'com.github.abrarsyed.gmcp:GMCP:latest.integration'
     }
 }
+
 configurations {
     compile
     deployJars
 }
+
 repositories {
     maven { url = "http://maven.dries007.net/content/repositories/ccm/" }
     maven { url = "http://files.minecraftforge.net/maven/" }
@@ -36,7 +38,7 @@ minecraft {
 
 ext.BUILD_NUMBER = System.getenv().BUILD_NUMBER;
 if (ext.BUILD_NUMBER == null) ext.BUILD_NUMBER = "0"
-version = project.minecraft.minecraftVersion + "-" + version + "." + ext.BUILD_NUMBER
+version = version + "." + ext.BUILD_NUMBER
 
 dependencies {
     compile("ccm.placeableTools:PlaceableTools:" + project.minecraft.minecraftVersion + "-1.+:dev")
@@ -45,7 +47,7 @@ dependencies {
 processResources {
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.info'
-        expand 'version':project.version, 'mcversion':project.minecraft.minecraftVersion
+        expand 'version':project.version, 'mcversion':project.minecraft.minecraftVersion, 'placeableToolsVersion':configurations.compile.resolvedConfiguration.firstLevelModuleDependencies.findAll({ it.moduleName == "PlaceableTools"}).collect({ it.moduleVersion})[0].split("-")[1]
     }
 
     from(sourceSets.main.resources.srcDirs) {
@@ -55,12 +57,21 @@ processResources {
 
 task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
-    classifier = 'dev-src'
+    classifier = 'src'
+    appendix = project.minecraft.minecraftVersion
 }
 
 task deobfJar(type: Jar) {
     from sourceSets.main.output
-	classifier = 'dev'
+    from (sourceSets.main.allSource.srcDirs) {
+        include '**/*.java'
+    }
+    classifier = 'dev'
+    appendix = project.minecraft.minecraftVersion
+}
+
+jar {
+    appendix = project.minecraft.minecraftVersion
 }
 
 artifacts {
@@ -70,54 +81,56 @@ artifacts {
 }
 
 uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: mavenUrl) {
-                authentication(userName: mavenUser, password: mavenPassword)
-            }
-            pom {
-                groupId = project.group
-                version = project.version
-                artifactId = project.archivesBaseName
-                project {
-                    name project.archivesBaseName
-                    packaging 'jar'
-                    description 'Adds upgradable graves to MC.'
-                    url 'https://github.com/CCM-Modding/CcmBurialServicesInc'
-
-                    scm {
+    if (project.hasProperty("mavenUser") && project.hasProperty("mavenPassword")) {
+        repositories {
+            mavenDeployer {
+                repository(url: "http://maven.dries007.net/content/repositories/ccm/") {
+                    authentication(userName: mavenUser, password: mavenPassword)
+                }
+                pom {
+                    groupId = project.group
+                    version = project.version
+                    artifactId = project.archivesBaseName
+                    project {
+                        name project.archivesBaseName
+                        packaging 'jar'
+                        description 'Adds upgradable graves to MC.'
                         url 'https://github.com/CCM-Modding/CcmBurialServicesInc'
-                        connection 'scm:git:git://github.com/CCM-Modding/CcmBurialServicesInc.git'
-                        developerConnection 'scm:git:git@github.com:CCM-Modding/CcmBurialServicesInc.git'
-                    }
 
-                    issueManagement {
-                        system 'github'
-                        url 'https://github.com/CCM-Modding/CcmBurialServicesInc/issues'
-                    }
-
-                    licenses  {
-                        license  {
-                            name 'MIT License'
-                            url 'https://raw.github.com/CCM-Modding/CcmBurialServicesInc/master/LICENCE'
-                            distribution 'repo'
+                        scm {
+                            url 'https://github.com/CCM-Modding/CcmBurialServicesInc'
+                            connection 'scm:git:git://github.com/CCM-Modding/CcmBurialServicesInc.git'
+                            developerConnection 'scm:git:git@github.com:CCM-Modding/CcmBurialServicesInc.git'
                         }
-                    }
 
-                    developers {
-                        developer {
-                            id 'Dries007'
-                            name 'Dries007'
-                            roles { role 'developer' }
+                        issueManagement {
+                            system 'github'
+                            url 'https://github.com/CCM-Modding/CcmBurialServicesInc/issues'
                         }
-                        developer {
-                            id 'Claycorp'
-                            name 'Claycorp'
-                            roles { role 'architect' }
+
+                        licenses  {
+                            license  {
+                                name 'MIT License'
+                                url 'https://raw.github.com/CCM-Modding/CcmBurialServicesInc/master/LICENCE'
+                                distribution 'repo'
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                id 'Dries007'
+                                name 'Dries007'
+                                roles { role 'developer' }
+                            }
+                            developer {
+                                id 'Claycorp'
+                                name 'Claycorp'
+                                roles { role 'architect' }
+                            }
                         }
                     }
                 }
-           }
-       }
+            }
+        }
     }
 }

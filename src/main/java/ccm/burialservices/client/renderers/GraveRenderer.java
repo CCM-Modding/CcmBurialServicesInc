@@ -126,7 +126,7 @@ public class GraveRenderer extends TileEntitySpecialRenderer
         if (signText.length == 0) return;
         int i = 0;
         for (String line : signText) if (!Strings.isNullOrEmpty(line)) {i++;}
-        if (signText.length != i) return;
+        if (i == 0) return;
 
         GL11.glPushMatrix();
         float f1 = 0.6666667F;
@@ -174,14 +174,14 @@ public class GraveRenderer extends TileEntitySpecialRenderer
         for (int j = 0; j < signText.length; ++j)
         {
             GL11.glPushMatrix();
-            String s = signText[signText.length - j - 1];
+            String s = signText[j];
             int width = fontrenderer.getStringWidth(s);
             if (width > 95)
             {
                 float f = 1f - ((width) * 0.0015f);
                 GL11.glScalef(f, f, f);
             }
-            fontrenderer.drawString(s, -width / 2, j * 10 - signText.length * 5, b0);
+            fontrenderer.drawString(s, -width / 2, j * 10 - 20, b0);
             GL11.glPopMatrix();
         }
 

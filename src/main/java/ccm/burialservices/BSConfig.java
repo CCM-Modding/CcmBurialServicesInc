@@ -33,6 +33,10 @@ public class BSConfig
     public int toolBlockID  = 270;
     public int graveBlockID = 271;
     public final String[][] RIPText;
+    public int defaultGraveSize = 1;
+    public boolean giveSkull = true;
+    public int exclusiveTimer = 60 * 5 * 20;
+    public int decomposeTimer = 60 * 5 * 20;
 
     public BSConfig(File suggestedConfigurationFile)
     {
@@ -42,6 +46,12 @@ public class BSConfig
         graveBlockID = config.getBlock("graveBlockID", graveBlockID).getInt();
 
         villagerID = config.get(Configuration.CATEGORY_BLOCK, "villagerID", villagerID, "Not a real blockID but must be equal on server and client!").getInt();
+
+        defaultGraveSize = config.get(Configuration.CATEGORY_GENERAL, "defaultGraveSize", defaultGraveSize, "Default size for graves, includes the held tool.").getInt();
+        giveSkull = config.get(Configuration.CATEGORY_GENERAL, "giveSkull", giveSkull, "Drop a skull when the grave breaks").getBoolean(giveSkull);
+
+        exclusiveTimer = config.get(Configuration.CATEGORY_GENERAL, "exclusiveTimer", exclusiveTimer, "Time only the owner can access the grave. In ticks.").getInt();
+        decomposeTimer = config.get(Configuration.CATEGORY_GENERAL, "decomposeTimer", decomposeTimer, "Time it takes the grave to decompose, starts after exclusiveTimer. In ticks.").getInt();
 
         String[] RIPTextLine1 = {"RIP", "Here lies"};
         String[] RIPTextLine2 = {"Dries007", "ClayCorp", "Morton", "CaptainShadows", "Squidward", "Testificate", "John Doe", "Jane Doe", "Firefly", "Scrubs", "Neo", "Ned Stark", "Villager #1", "Villager #2", "Villager #3", "Villager #4", "Villager #5", "Villager #6", "Villager #7", "Villager #8", "Villager #9"};

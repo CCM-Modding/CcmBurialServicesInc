@@ -30,10 +30,12 @@ public class BSConstants
     public static final String MODID   = "BurialServices";
     public static final String MODNAME = "CcmBurialServicesInc";
 
+    public static final Joiner TEXT_JOINER = Joiner.on('\n');
+
     public static final String CHANNEL_SIGN_UPDATE   = MODID + "SU";
     public static final String CHANNEL_GRAVE_UPGRADE = MODID + "U";
 
-    public static final String NBT_PLAYER_GRAVE_DATA = "GraveData";
-
-    public static final Joiner TEXT_JOINER = Joiner.on('\n');
+    public static final String NBT_PLAYER_GRAVE_DATA   = "GraveData";
+    public static final String NBT_PLAYER_DISABLEGRAVE = "DisableGrave";
+    public static final String NBT_GRAVE_CAPACITY      = "capacity";
 }
